@@ -81,7 +81,7 @@ export default function Page() {
   const [showCommon, setShowCommon] = useState(false);
   const [botPrompt, setBotPrompt] = useState('');
   const [promptExpanded, setPromptExpanded] = useState(false);
-  const [sortBy, setSortBy] = useState('score');
+  const [sortBy, setSortBy] = useState('departure');
   const [activePair, setActivePair] = useState(null);
 
   const config = {
@@ -365,12 +365,12 @@ export default function Page() {
           <div className="sortbar">
             <span className="sortbar-label">Sort</span>
             <label>
-              <input type="radio" name="sortBy" value="score" checked={sortBy === 'score'} onChange={() => setSortBy('score')} />
-              {' '}Score
-            </label>
-            <label>
               <input type="radio" name="sortBy" value="departure" checked={sortBy === 'departure'} onChange={() => setSortBy('departure')} />
               {' '}Departure time
+            </label>
+            <label>
+              <input type="radio" name="sortBy" value="score" checked={sortBy === 'score'} onChange={() => setSortBy('score')} />
+              {' '}Score
             </label>
           </div>
           <div className="colheads"><span className="tc">TC (TRV)</span><span className="baw">BAW (PIN)</span></div>
