@@ -14,7 +14,15 @@ export function prepareComparison(tcRaw, bawRaw) {
         for (const journey of leg.journeys || []) {
           const departure = new Date(journey.departure.date).toLocaleString('sv-SE', { timeZone: journey.departure.timezone }).slice(0, 16);
           const arrival = new Date(journey.arrival.date).toLocaleString('sv-SE', { timeZone: journey.arrival.timezone }).slice(0, 16);
-          const companyKey = String(leg.companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const companyLower = String(leg.companyName || '').toLowerCase();
+          let companyKey = '';
+          for (const ch of companyLower) {
+            const isLetter = ch >= 'a' && ch <= 'z';
+            const isDigit = ch >= '0' && ch <= '9';
+            if (isLetter || isDigit) {
+              companyKey += ch;
+            }
+          }
           rowsBySide[side.label].push({
             tripId: trip._id,
             company: leg.companyName || '',
