@@ -98,9 +98,60 @@ button:focus-visible {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 14px 16px 16px;
+  padding: 6px 16px;
   margin: -12px 0 26px;
   max-width: 1100px;
+}
+.config-section {
+  padding: 10px 0;
+}
+.config-section + .config-section {
+  border-top: 1px dashed var(--line);
+}
+.config-section.side {
+  border-left: 4px solid var(--line);
+  padding-left: 12px;
+}
+.config-section.tc-side {
+  border-left-color: var(--tc);
+}
+.config-section.baw-side {
+  border-left-color: var(--baw);
+}
+.config-title.tc {
+  color: var(--tc);
+}
+.config-title.baw {
+  color: var(--baw);
+}
+.config-grid select {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+  width: 180px;
+}
+.routes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-self: flex-end;
+}
+.route {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-weight: 500;
+  font-size: 13px;
+}
+.route.active {
+  border-color: var(--ink);
+  background: var(--panel);
+  font-weight: 700;
 }
 .config-title {
   font-size: 12px;

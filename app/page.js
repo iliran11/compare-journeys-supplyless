@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { PRESETS } from './presets';
 
 function flatten(response) {
   const rows = [];
@@ -48,6 +49,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
+  const [presetName, setPresetName] = useState(PRESETS[0] ? PRESETS[0].name : '');
   const [config, setConfig] = useState({
     tcCode: 'TRV',
     tcSupplierId: '64cb7cafdff7a93b3203f82b',
@@ -192,50 +194,90 @@ export default function Page() {
 
       {showConfig && (
         <div className="config">
-          <div className="config-title">Request configuration</div>
-          <div className="config-grid">
-            <div>
-              <label htmlFor="tcCode">TC supplier code</label>
-              <input id="tcCode" value={config.tcCode} onChange={(e) => setConfigField('tcCode', e.target.value)} />
+          <div className="config-section">
+            <div className="config-title">Route presets</div>
+            <div className="config-grid">
+              <div>
+                <label htmlFor="preset">Preset</label>
+                <select id="preset" value={presetName} onChange={(e) => setPresetName(e.target.value)}>
+                  {PRESETS.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
+                </select>
+              </div>
+              <div className="routes">
+                {(PRESETS.find((p) => p.name === presetName) || { routes: [] }).routes.map((r) => {
+                  const active = r.fromSlug === fromSlug && r.toSlug === toSlug;
+                  return (
+                    <button
+                      key={r.fromSlug + '|' + r.toSlug}
+                      className={'route' + (active ? ' active' : '')}
+                      onClick={() => { setFromSlug(r.fromSlug); setToSlug(r.toSlug); if (r.date) setDate(r.date); }}
+                    >
+                      {r.fromSlug} → {r.toSlug}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div>
-              <label htmlFor="tcSupplierId">TC supplier ID</label>
-              <input id="tcSupplierId" className="wide" value={config.tcSupplierId} onChange={(e) => setConfigField('tcSupplierId', e.target.value)} />
+          </div>
+
+          <div className="config-section">
+            <div className="config-title">Common</div>
+            <div className="config-grid">
+              <div>
+                <label htmlFor="passengersAmount">Passengers</label>
+                <input id="passengersAmount" value={config.passengersAmount} onChange={(e) => setConfigField('passengersAmount', e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="searchRadiusInMeters">Search radius (m)</label>
+                <input id="searchRadiusInMeters" value={config.searchRadiusInMeters} onChange={(e) => setConfigField('searchRadiusInMeters', e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="mode">Mode</label>
+                <input id="mode" value={config.mode} onChange={(e) => setConfigField('mode', e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="filterBySourceOfData">Filter by source of data</label>
+                <input id="filterBySourceOfData" value={config.filterBySourceOfData} onChange={(e) => setConfigField('filterBySourceOfData', e.target.value)} />
+              </div>
+              <div className="check">
+                <label htmlFor="skipEnrichment">
+                  <input
+                    id="skipEnrichment"
+                    type="checkbox"
+                    checked={config.skipEnrichment}
+                    onChange={(e) => setConfigField('skipEnrichment', e.target.checked)}
+                  />{' '}
+                  Skip enrichment
+                </label>
+              </div>
             </div>
-            <div>
-              <label htmlFor="bawCode">BAW supplier code</label>
-              <input id="bawCode" value={config.bawCode} onChange={(e) => setConfigField('bawCode', e.target.value)} />
+          </div>
+
+          <div className="config-section side tc-side">
+            <div className="config-title tc">TC request</div>
+            <div className="config-grid">
+              <div>
+                <label htmlFor="tcCode">Supplier code</label>
+                <input id="tcCode" value={config.tcCode} onChange={(e) => setConfigField('tcCode', e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="tcSupplierId">Supplier ID</label>
+                <input id="tcSupplierId" className="wide" value={config.tcSupplierId} onChange={(e) => setConfigField('tcSupplierId', e.target.value)} />
+              </div>
             </div>
-            <div>
-              <label htmlFor="bawSupplierId">BAW supplier ID</label>
-              <input id="bawSupplierId" className="wide" value={config.bawSupplierId} onChange={(e) => setConfigField('bawSupplierId', e.target.value)} />
-            </div>
-            <div>
-              <label htmlFor="passengersAmount">Passengers</label>
-              <input id="passengersAmount" value={config.passengersAmount} onChange={(e) => setConfigField('passengersAmount', e.target.value)} />
-            </div>
-            <div>
-              <label htmlFor="searchRadiusInMeters">Search radius (m)</label>
-              <input id="searchRadiusInMeters" value={config.searchRadiusInMeters} onChange={(e) => setConfigField('searchRadiusInMeters', e.target.value)} />
-            </div>
-            <div>
-              <label htmlFor="mode">Mode</label>
-              <input id="mode" value={config.mode} onChange={(e) => setConfigField('mode', e.target.value)} />
-            </div>
-            <div>
-              <label htmlFor="filterBySourceOfData">Filter by source of data</label>
-              <input id="filterBySourceOfData" value={config.filterBySourceOfData} onChange={(e) => setConfigField('filterBySourceOfData', e.target.value)} />
-            </div>
-            <div className="check">
-              <label htmlFor="skipEnrichment">
-                <input
-                  id="skipEnrichment"
-                  type="checkbox"
-                  checked={config.skipEnrichment}
-                  onChange={(e) => setConfigField('skipEnrichment', e.target.checked)}
-                />{' '}
-                Skip enrichment
-              </label>
+          </div>
+
+          <div className="config-section side baw-side">
+            <div className="config-title baw">BAW request</div>
+            <div className="config-grid">
+              <div>
+                <label htmlFor="bawCode">Supplier code</label>
+                <input id="bawCode" value={config.bawCode} onChange={(e) => setConfigField('bawCode', e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="bawSupplierId">Supplier ID</label>
+                <input id="bawSupplierId" className="wide" value={config.bawSupplierId} onChange={(e) => setConfigField('bawSupplierId', e.target.value)} />
+              </div>
             </div>
           </div>
         </div>
