@@ -7,11 +7,13 @@ function flatten(response) {
   const rows = [];
   const trips = (response.trips || []).concat(response.alternativeTrips || []);
   for (const trip of trips) {
+    const tripId = trip._id;
     for (const leg of trip.legs || []) {
       for (const j of leg.journeys || []) {
         const dep = new Date(j.departure.date).toLocaleString('sv-SE', { timeZone: j.departure.timezone }).slice(0, 16);
         const arr = new Date(j.arrival.date).toLocaleString('sv-SE', { timeZone: j.arrival.timezone }).slice(0, 16);
         rows.push({
+          tripId: tripId,
           company: leg.companyName || '',
           lineClass: leg.lineClass || '',
           fromStation: leg.from ? leg.from.name : '',
@@ -51,6 +53,19 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate }) {
         {row.lineClass}{row.fromStation ? ' · ' + row.fromStation : ''}
         {typeof row.score === 'number' && row.score > 0 ? ' · score ' + Math.round(row.score) : ''}
       </div>
+      {row.tripId && (
+        <div className="meta">
+          <a
+            className="triplink"
+            href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {row.tripId} ↗
+          </a>
+        </div>
+      )}
     </div>
   );
 }

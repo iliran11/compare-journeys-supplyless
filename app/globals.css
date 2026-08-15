@@ -375,6 +375,16 @@ button.secondary {
   font-size: 12px;
   margin-top: 2px;
 }
+.triplink {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--muted);
+}
+.triplink:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
 .card .price {
   float: right;
   font-variant-numeric: tabular-nums;
