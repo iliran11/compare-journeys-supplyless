@@ -1,31 +1,42 @@
 const SEARCH_URL = 'https://www.bookaway.com/_api/search/composite/v1/search-results';
 
-const SUPPLIERS = {
-  tc: { code: 'TRV', supplierId: '64cb7cafdff7a93b3203f82b' },
-  baw: { code: 'PIN', supplierId: '660d57d138198f88d7da905c' }
+const DEFAULT_CONFIG = {
+  tcSupplier: { code: 'TRV', supplierId: '64cb7cafdff7a93b3203f82b' },
+  bawSupplier: { code: 'PIN', supplierId: '660d57d138198f88d7da905c' },
+  passengersAmount: 2,
+  searchRadiusInMeters: 1000,
+  mode: 'origin',
+  skipEnrichment: false,
+  filterBySourceOfData: 'PIN'
 };
 
 export async function POST(request) {
   try {
     const input = await request.json();
-    console.log('[search] ' + input.fromSlug + ' -> ' + input.toSlug + ' on ' + input.date);
+    const config = Object.assign({}, DEFAULT_CONFIG, input.config || {});
+    console.log('[search] ' + input.fromSlug + ' -> ' + input.toSlug + ' on ' + input.date + ' config=' + JSON.stringify(config));
+
+    const passengerTypes = [];
+    for (let i = 0; i < config.passengersAmount; i++) {
+      passengerTypes.push({ slug: 'adult', defaultAge: '35' });
+    }
 
     const results = {};
     for (const side of ['tc', 'baw']) {
-      const supplier = SUPPLIERS[side];
+      const supplier = side === 'tc' ? config.tcSupplier : config.bawSupplier;
       const body = {
         fromSlug: input.fromSlug,
         toSlug: input.toSlug,
         legs: [{ date: input.date, fromSlug: input.fromSlug, toSlug: input.toSlug }],
         departureDate: input.date,
-        filter: { passengersAmount: 2, passengerTypes: [{ slug: 'adult', defaultAge: '35' }, { slug: 'adult', defaultAge: '35' }] },
+        filter: { passengersAmount: config.passengersAmount, passengerTypes: passengerTypes },
         resultsOrder: false,
-        searchRadiusInMeters: 1000,
+        searchRadiusInMeters: config.searchRadiusInMeters,
         supplier: { supplier: supplier },
         suppliers: [{ supplier: supplier }],
-        skipEnrichment: false,
-        mode: 'origin',
-        filterBySourceOfData: 'PIN'
+        skipEnrichment: config.skipEnrichment,
+        mode: config.mode,
+        filterBySourceOfData: config.filterBySourceOfData
       };
       console.log('[search] fetching ' + side + ' (' + supplier.code + ')');
       const upstream = await fetch(SEARCH_URL, {

@@ -47,6 +47,26 @@ export default function Page() {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [showConfig, setShowConfig] = useState(false);
+  const [config, setConfig] = useState({
+    tcCode: 'TRV',
+    tcSupplierId: '64cb7cafdff7a93b3203f82b',
+    bawCode: 'PIN',
+    bawSupplierId: '660d57d138198f88d7da905c',
+    passengersAmount: 2,
+    searchRadiusInMeters: 1000,
+    mode: 'origin',
+    skipEnrichment: false,
+    filterBySourceOfData: 'PIN'
+  });
+
+  function setConfigField(field, value) {
+    setConfig(function (prev) {
+      const next = Object.assign({}, prev);
+      next[field] = value;
+      return next;
+    });
+  }
   const [wires, setWires] = useState({ viewBox: '0 0 0 0', paths: [] });
 
   const boardRef = useRef(null);
@@ -91,7 +111,20 @@ export default function Page() {
       const res = await fetch('/api/search', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ fromSlug: fromSlug.trim(), toSlug: toSlug.trim(), date: date.trim() })
+        body: JSON.stringify({
+          fromSlug: fromSlug.trim(),
+          toSlug: toSlug.trim(),
+          date: date.trim(),
+          config: {
+            tcSupplier: { code: config.tcCode.trim(), supplierId: config.tcSupplierId.trim() },
+            bawSupplier: { code: config.bawCode.trim(), supplierId: config.bawSupplierId.trim() },
+            passengersAmount: Number(config.passengersAmount) || 1,
+            searchRadiusInMeters: Number(config.searchRadiusInMeters) || 1000,
+            mode: config.mode.trim(),
+            skipEnrichment: config.skipEnrichment,
+            filterBySourceOfData: config.filterBySourceOfData.trim()
+          }
+        })
       });
       if (!res.ok) throw new Error('search API returned ' + res.status);
       const data = await res.json();
@@ -145,8 +178,68 @@ export default function Page() {
           <input id="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
         <button onClick={run} disabled={loading}>Search both</button>
+        <button
+          className="iconbtn"
+          onClick={() => setShowConfig(!showConfig)}
+          aria-expanded={showConfig}
+          aria-label="Request configuration"
+          title="Request configuration"
+        >
+          ⚙
+        </button>
         <span className="status">{status}</span>
       </div>
+
+      {showConfig && (
+        <div className="config">
+          <div className="config-title">Request configuration</div>
+          <div className="config-grid">
+            <div>
+              <label htmlFor="tcCode">TC supplier code</label>
+              <input id="tcCode" value={config.tcCode} onChange={(e) => setConfigField('tcCode', e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="tcSupplierId">TC supplier ID</label>
+              <input id="tcSupplierId" className="wide" value={config.tcSupplierId} onChange={(e) => setConfigField('tcSupplierId', e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="bawCode">BAW supplier code</label>
+              <input id="bawCode" value={config.bawCode} onChange={(e) => setConfigField('bawCode', e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="bawSupplierId">BAW supplier ID</label>
+              <input id="bawSupplierId" className="wide" value={config.bawSupplierId} onChange={(e) => setConfigField('bawSupplierId', e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="passengersAmount">Passengers</label>
+              <input id="passengersAmount" value={config.passengersAmount} onChange={(e) => setConfigField('passengersAmount', e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="searchRadiusInMeters">Search radius (m)</label>
+              <input id="searchRadiusInMeters" value={config.searchRadiusInMeters} onChange={(e) => setConfigField('searchRadiusInMeters', e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="mode">Mode</label>
+              <input id="mode" value={config.mode} onChange={(e) => setConfigField('mode', e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="filterBySourceOfData">Filter by source of data</label>
+              <input id="filterBySourceOfData" value={config.filterBySourceOfData} onChange={(e) => setConfigField('filterBySourceOfData', e.target.value)} />
+            </div>
+            <div className="check">
+              <label htmlFor="skipEnrichment">
+                <input
+                  id="skipEnrichment"
+                  type="checkbox"
+                  checked={config.skipEnrichment}
+                  onChange={(e) => setConfigField('skipEnrichment', e.target.checked)}
+                />{' '}
+                Skip enrichment
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
 
       {result && (
         <div>
