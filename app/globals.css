@@ -83,6 +83,9 @@ button:focus-visible {
   outline: 2px solid var(--tc);
   outline-offset: 2px;
 }
+.openlink {
+  align-self: flex-end;
+}
 button.secondary {
   background: var(--panel);
   color: var(--ink);

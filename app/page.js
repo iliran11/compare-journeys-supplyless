@@ -78,12 +78,10 @@ export default function Page() {
     return null;
   }
 
-  function openBawResultPages() {
+  function bawResultsUrl(debugValue) {
     const route = currentRoute();
     const country = route && route.countrySlug ? route.countrySlug : 'colombia';
-    const base = 'https://www.bookaway.com/s/' + country + '/' + fromSlug + '-to-' + toSlug + '?departureDate=' + date.trim();
-    window.open(base + '&debug=TRV-TC', '_blank');
-    window.open(base + '&debug=TRV-BAW', '_blank');
+    return 'https://www.bookaway.com/s/' + country + '/' + fromSlug + '-to-' + toSlug + '?departureDate=' + date.trim() + '&debug=' + debugValue;
   }
   const [wires, setWires] = useState({ viewBox: '0 0 0 0', paths: [] });
 
@@ -202,9 +200,6 @@ export default function Page() {
           <input id="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
         <button onClick={run} disabled={loading}>Search both</button>
-        <button className="secondary" onClick={openBawResultPages} title="Opens two tabs: ?debug=TRV-TC and ?debug=TRV-BAW">
-          BAW search results ↗
-        </button>
         <button
           className="iconbtn"
           onClick={() => setShowConfig(!showConfig)}
@@ -257,6 +252,11 @@ export default function Page() {
                 <label htmlFor="tcSupplierId">Supplier ID</label>
                 <input id="tcSupplierId" className="wide" value={config.tcSupplierId} readOnly />
               </div>
+              <div className="openlink">
+                <button className="secondary" onClick={() => window.open(bawResultsUrl('PIN-TC'), '_blank')} title={bawResultsUrl('PIN-TC')}>
+                  BAW search results (?debug=PIN-TC) ↗
+                </button>
+              </div>
             </div>
           </div>
 
@@ -270,6 +270,11 @@ export default function Page() {
               <div>
                 <label htmlFor="bawSupplierId">Supplier ID</label>
                 <input id="bawSupplierId" className="wide" value={config.bawSupplierId} readOnly />
+              </div>
+              <div className="openlink">
+                <button className="secondary" onClick={() => window.open(bawResultsUrl('PIN-BAW'), '_blank')} title={bawResultsUrl('PIN-BAW')}>
+                  BAW search results (?debug=PIN-BAW) ↗
+                </button>
               </div>
             </div>
           </div>
