@@ -198,14 +198,6 @@ export default function Page() {
           </select>
         </div>
         <div>
-          <label htmlFor="from">From slug</label>
-          <input id="from" value={fromSlug} readOnly />
-        </div>
-        <div>
-          <label htmlFor="to">To slug</label>
-          <input id="to" value={toSlug} readOnly />
-        </div>
-        <div>
           <label htmlFor="date">Date</label>
           <input id="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
