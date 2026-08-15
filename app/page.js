@@ -50,6 +50,8 @@ export default function Page() {
   const [result, setResult] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
   const [showCommon, setShowCommon] = useState(false);
+  const [botPrompt, setBotPrompt] = useState('');
+  const [promptExpanded, setPromptExpanded] = useState(false);
 
   const config = {
     tcCode: 'TRV',
@@ -144,6 +146,11 @@ export default function Page() {
       });
       if (!res.ok) throw new Error('search API returned ' + res.status);
       const data = await res.json();
+
+      setBotPrompt(
+        '#RAW RESULTS FROM TC\n' + JSON.stringify(data.tc, null, 2) +
+        '\n\n#RAW RESULTS FROM BAW\n' + JSON.stringify(data.baw, null, 2)
+      );
 
       const tcRows = flatten(data.tc);
       const bawRows = flatten(data.baw);
@@ -277,6 +284,25 @@ export default function Page() {
                 </button>
               </div>
             </div>
+          </div>
+
+          <div className="config-section">
+            <div className="prompt-head">
+              <div className="config-title">Prompt for bot</div>
+              <button className="secondary" onClick={() => setPromptExpanded(!promptExpanded)}>
+                {promptExpanded ? 'Collapse' : 'Expand'}
+              </button>
+            </div>
+            <textarea
+              className={'prompt-area' + (promptExpanded ? ' expanded' : '')}
+              value={botPrompt}
+              onChange={(e) => setBotPrompt(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Escape') setPromptExpanded(false); }}
+              placeholder="Run a search to pre-populate with the raw TC and BAW responses."
+            />
+            {promptExpanded && (
+              <button className="prompt-close" onClick={() => setPromptExpanded(false)}>Collapse ✕</button>
+            )}
           </div>
         </div>
       )}

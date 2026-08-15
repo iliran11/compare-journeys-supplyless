@@ -83,6 +83,51 @@ button:focus-visible {
   outline: 2px solid var(--tc);
   outline-offset: 2px;
 }
+.prompt-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.prompt-head .config-title {
+  margin-bottom: 0;
+}
+.prompt-head button {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+.prompt-area {
+  display: block;
+  width: 100%;
+  min-height: 140px;
+  max-height: 60vh;
+  resize: vertical;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.prompt-area.expanded {
+  position: fixed;
+  inset: 24px;
+  width: auto;
+  max-height: none;
+  min-height: 0;
+  resize: none;
+  z-index: 100;
+  background: var(--panel);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+}
+.prompt-close {
+  position: fixed;
+  top: 34px;
+  right: 44px;
+  z-index: 101;
+  padding: 7px 14px;
+  font-size: 12px;
+}
 .openlink {
   align-self: flex-end;
 }
