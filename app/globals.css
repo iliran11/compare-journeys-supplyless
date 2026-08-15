@@ -277,6 +277,34 @@ button.secondary {
   font-size: 13px;
   align-self: center;
 }
+.sortbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1100px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+.sortbar-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.sortbar label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.card.highlight {
+  border-color: var(--match);
+  box-shadow: 0 0 0 1px var(--match);
+}
+.card.dim {
+  opacity: 0.35;
+}
 .colheads {
   display: flex;
   justify-content: space-between;
