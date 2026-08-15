@@ -133,25 +133,40 @@ button:focus-visible {
   font: inherit;
   width: 180px;
 }
-.routes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-self: flex-end;
-}
-.route {
-  background: var(--bg);
+.controls select {
+  background: var(--panel);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-weight: 500;
-  font-size: 13px;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+  width: 220px;
 }
-.route.active {
-  border-color: var(--ink);
-  background: var(--panel);
-  font-weight: 700;
+.controls input[readonly],
+.config-grid input[readonly] {
+  color: var(--muted);
+  background: transparent;
+  cursor: default;
+}
+.config-toggle {
+  background: none;
+  color: inherit;
+  border: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.config-toggle .config-title {
+  margin-bottom: 0;
+}
+.config-toggle + .config-grid {
+  margin-top: 10px;
+}
+.chevron {
+  color: var(--muted);
+  font-size: 11px;
 }
 .config-title {
   font-size: 12px;

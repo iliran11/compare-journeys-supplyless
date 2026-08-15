@@ -49,8 +49,9 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
-  const [presetName, setPresetName] = useState(PRESETS[0] ? PRESETS[0].name : '');
-  const [config, setConfig] = useState({
+  const [showCommon, setShowCommon] = useState(false);
+
+  const config = {
     tcCode: 'TRV',
     tcSupplierId: '64cb7cafdff7a93b3203f82b',
     bawCode: 'PIN',
@@ -60,14 +61,12 @@ export default function Page() {
     mode: 'origin',
     skipEnrichment: false,
     filterBySourceOfData: 'PIN'
-  });
+  };
 
-  function setConfigField(field, value) {
-    setConfig(function (prev) {
-      const next = Object.assign({}, prev);
-      next[field] = value;
-      return next;
-    });
+  function selectRoute(value) {
+    const parts = value.split('|');
+    setFromSlug(parts[0]);
+    setToSlug(parts[1]);
   }
   const [wires, setWires] = useState({ viewBox: '0 0 0 0', paths: [] });
 
@@ -168,12 +167,26 @@ export default function Page() {
 
       <div className="controls">
         <div>
+          <label htmlFor="route">Route</label>
+          <select id="route" value={fromSlug + '|' + toSlug} onChange={(e) => selectRoute(e.target.value)}>
+            {PRESETS.map((p) => (
+              <optgroup key={p.name} label={p.name}>
+                {p.routes.map((r) => (
+                  <option key={r.fromSlug + '|' + r.toSlug} value={r.fromSlug + '|' + r.toSlug}>
+                    {r.fromSlug} → {r.toSlug}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+        <div>
           <label htmlFor="from">From slug</label>
-          <input id="from" value={fromSlug} onChange={(e) => setFromSlug(e.target.value)} />
+          <input id="from" value={fromSlug} readOnly />
         </div>
         <div>
           <label htmlFor="to">To slug</label>
-          <input id="to" value={toSlug} onChange={(e) => setToSlug(e.target.value)} />
+          <input id="to" value={toSlug} readOnly />
         </div>
         <div>
           <label htmlFor="date">Date</label>
@@ -195,62 +208,30 @@ export default function Page() {
       {showConfig && (
         <div className="config">
           <div className="config-section">
-            <div className="config-title">Route presets</div>
-            <div className="config-grid">
-              <div>
-                <label htmlFor="preset">Preset</label>
-                <select id="preset" value={presetName} onChange={(e) => setPresetName(e.target.value)}>
-                  {PRESETS.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
-                </select>
+            <button className="config-toggle" onClick={() => setShowCommon(!showCommon)} aria-expanded={showCommon}>
+              <span className="config-title">Common</span>
+              <span className="chevron">{showCommon ? '▾' : '▸'}</span>
+            </button>
+            {showCommon && (
+              <div className="config-grid">
+                <div>
+                  <label htmlFor="passengersAmount">Passengers</label>
+                  <input id="passengersAmount" value={config.passengersAmount} readOnly />
+                </div>
+                <div>
+                  <label htmlFor="searchRadiusInMeters">Search radius (m)</label>
+                  <input id="searchRadiusInMeters" value={config.searchRadiusInMeters} readOnly />
+                </div>
+                <div>
+                  <label htmlFor="mode">Mode</label>
+                  <input id="mode" value={config.mode} readOnly />
+                </div>
+                <div>
+                  <label htmlFor="filterBySourceOfData">Filter by source of data</label>
+                  <input id="filterBySourceOfData" value={config.filterBySourceOfData} readOnly />
+                </div>
               </div>
-              <div className="routes">
-                {(PRESETS.find((p) => p.name === presetName) || { routes: [] }).routes.map((r) => {
-                  const active = r.fromSlug === fromSlug && r.toSlug === toSlug;
-                  return (
-                    <button
-                      key={r.fromSlug + '|' + r.toSlug}
-                      className={'route' + (active ? ' active' : '')}
-                      onClick={() => { setFromSlug(r.fromSlug); setToSlug(r.toSlug); if (r.date) setDate(r.date); }}
-                    >
-                      {r.fromSlug} → {r.toSlug}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="config-section">
-            <div className="config-title">Common</div>
-            <div className="config-grid">
-              <div>
-                <label htmlFor="passengersAmount">Passengers</label>
-                <input id="passengersAmount" value={config.passengersAmount} onChange={(e) => setConfigField('passengersAmount', e.target.value)} />
-              </div>
-              <div>
-                <label htmlFor="searchRadiusInMeters">Search radius (m)</label>
-                <input id="searchRadiusInMeters" value={config.searchRadiusInMeters} onChange={(e) => setConfigField('searchRadiusInMeters', e.target.value)} />
-              </div>
-              <div>
-                <label htmlFor="mode">Mode</label>
-                <input id="mode" value={config.mode} onChange={(e) => setConfigField('mode', e.target.value)} />
-              </div>
-              <div>
-                <label htmlFor="filterBySourceOfData">Filter by source of data</label>
-                <input id="filterBySourceOfData" value={config.filterBySourceOfData} onChange={(e) => setConfigField('filterBySourceOfData', e.target.value)} />
-              </div>
-              <div className="check">
-                <label htmlFor="skipEnrichment">
-                  <input
-                    id="skipEnrichment"
-                    type="checkbox"
-                    checked={config.skipEnrichment}
-                    onChange={(e) => setConfigField('skipEnrichment', e.target.checked)}
-                  />{' '}
-                  Skip enrichment
-                </label>
-              </div>
-            </div>
+            )}
           </div>
 
           <div className="config-section side tc-side">
@@ -258,11 +239,11 @@ export default function Page() {
             <div className="config-grid">
               <div>
                 <label htmlFor="tcCode">Supplier code</label>
-                <input id="tcCode" value={config.tcCode} onChange={(e) => setConfigField('tcCode', e.target.value)} />
+                <input id="tcCode" value={config.tcCode} readOnly />
               </div>
               <div>
                 <label htmlFor="tcSupplierId">Supplier ID</label>
-                <input id="tcSupplierId" className="wide" value={config.tcSupplierId} onChange={(e) => setConfigField('tcSupplierId', e.target.value)} />
+                <input id="tcSupplierId" className="wide" value={config.tcSupplierId} readOnly />
               </div>
             </div>
           </div>
@@ -272,11 +253,11 @@ export default function Page() {
             <div className="config-grid">
               <div>
                 <label htmlFor="bawCode">Supplier code</label>
-                <input id="bawCode" value={config.bawCode} onChange={(e) => setConfigField('bawCode', e.target.value)} />
+                <input id="bawCode" value={config.bawCode} readOnly />
               </div>
               <div>
                 <label htmlFor="bawSupplierId">Supplier ID</label>
-                <input id="bawSupplierId" className="wide" value={config.bawSupplierId} onChange={(e) => setConfigField('bawSupplierId', e.target.value)} />
+                <input id="bawSupplierId" className="wide" value={config.bawSupplierId} readOnly />
               </div>
             </div>
           </div>
