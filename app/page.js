@@ -2,36 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { PRESETS } from './presets';
-
-function flatten(response) {
-  const rows = [];
-  const trips = (response.trips || []).concat(response.alternativeTrips || []);
-  for (const trip of trips) {
-    const tripId = trip._id;
-    for (const leg of trip.legs || []) {
-      for (const j of leg.journeys || []) {
-        const dep = new Date(j.departure.date).toLocaleString('sv-SE', { timeZone: j.departure.timezone }).slice(0, 16);
-        const arr = new Date(j.arrival.date).toLocaleString('sv-SE', { timeZone: j.arrival.timezone }).slice(0, 16);
-        rows.push({
-          tripId: tripId,
-          company: leg.companyName || '',
-          lineClass: leg.lineClass || '',
-          fromStation: leg.from ? leg.from.name : '',
-          departure: dep,
-          arrival: arr,
-          price: j.price ? j.price.amount : null,
-          score: typeof trip.originalScore === 'number' ? trip.originalScore : (typeof trip.score === 'number' ? trip.score : 0)
-        });
-      }
-    }
-  }
-  rows.sort(function (a, b) { return a.departure < b.departure ? -1 : 1; });
-  return rows;
-}
-
-function matchKey(row) {
-  return row.company.toLowerCase().replace(/[^a-z0-9]/g, '') + '|' + row.departure;
-}
+import { prepareComparison } from './prepare';
 
 function Card({ row, side, unmatched, pairId, activePair, onActivate }) {
   let className = 'card ' + side + (unmatched ? ' unmatched' : '');
@@ -203,32 +174,11 @@ export default function Page() {
         '\n\n#RAW RESULTS FROM BAW\n' + JSON.stringify(data.baw, null, 2)
       );
 
-      const tcRows = flatten(data.tc);
-      const bawRows = flatten(data.baw);
-
-      const bawByKey = new Map();
-      for (const row of bawRows) bawByKey.set(matchKey(row), row);
-
-      const pairs = [];
-      const tcOnly = [];
-      const usedBawKeys = new Set();
-      for (const row of tcRows) {
-        const key = matchKey(row);
-        if (bawByKey.has(key) && !usedBawKeys.has(key)) {
-          pairs.push({ tc: row, baw: bawByKey.get(key) });
-          usedBawKeys.add(key);
-        } else {
-          tcOnly.push(row);
-        }
-      }
-      const bawOnly = bawRows.filter(function (row) { return !usedBawKeys.has(matchKey(row)); });
-
-      pairs.sort(function (a, b) { return a.tc.departure < b.tc.departure ? -1 : 1; });
-      pairs.forEach(function (p, i) { p.id = i; });
+      const prepared = prepareComparison(data.tc, data.baw);
 
       setActivePair(null);
-      setResult({ pairs, tcOnly, bawOnly });
-      setStatus('TC: ' + tcRows.length + ' journeys · BAW: ' + bawRows.length + ' journeys · matched: ' + pairs.length);
+      setResult(prepared);
+      setStatus('TC: ' + prepared.tcCount + ' journeys · BAW: ' + prepared.bawCount + ' journeys · matched: ' + prepared.pairs.length);
     } catch (err) {
       setStatus('Error: ' + err.message);
     }
