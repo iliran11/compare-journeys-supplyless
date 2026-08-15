@@ -18,7 +18,7 @@ function flatten(response) {
           departure: dep,
           arrival: arr,
           price: j.price ? j.price.amount : null,
-          score: typeof j.score === 'number' ? j.score : (typeof leg.score === 'number' ? leg.score : 0)
+          score: typeof trip.originalScore === 'number' ? trip.originalScore : (typeof trip.score === 'number' ? trip.score : 0)
         });
       }
     }
@@ -99,7 +99,10 @@ export default function Page() {
   function sortSide(pairs, side) {
     const copy = pairs.slice();
     if (sortBy === 'score') {
-      copy.sort(function (a, b) { return b[side].score - a[side].score; });
+      copy.sort(function (a, b) {
+        if (b[side].score !== a[side].score) return b[side].score - a[side].score;
+        return a[side].departure < b[side].departure ? -1 : 1;
+      });
     } else {
       copy.sort(function (a, b) { return a[side].departure < b[side].departure ? -1 : 1; });
     }
