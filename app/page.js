@@ -68,6 +68,23 @@ export default function Page() {
     setFromSlug(parts[0]);
     setToSlug(parts[1]);
   }
+
+  function currentRoute() {
+    for (const preset of PRESETS) {
+      for (const route of preset.routes) {
+        if (route.fromSlug === fromSlug && route.toSlug === toSlug) return route;
+      }
+    }
+    return null;
+  }
+
+  function openBawResultPages() {
+    const route = currentRoute();
+    const country = route && route.countrySlug ? route.countrySlug : 'colombia';
+    const base = 'https://www.bookaway.com/s/' + country + '/' + fromSlug + '-to-' + toSlug + '?departureDate=' + date.trim();
+    window.open(base + '&debug=TRV-TC', '_blank');
+    window.open(base + '&debug=TRV-BAW', '_blank');
+  }
   const [wires, setWires] = useState({ viewBox: '0 0 0 0', paths: [] });
 
   const boardRef = useRef(null);
@@ -193,6 +210,9 @@ export default function Page() {
           <input id="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
         <button onClick={run} disabled={loading}>Search both</button>
+        <button className="secondary" onClick={openBawResultPages} title="Opens two tabs: ?debug=TRV-TC and ?debug=TRV-BAW">
+          BAW search results ↗
+        </button>
         <button
           className="iconbtn"
           onClick={() => setShowConfig(!showConfig)}

@@ -83,6 +83,12 @@ button:focus-visible {
   outline: 2px solid var(--tc);
   outline-offset: 2px;
 }
+button.secondary {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  font-weight: 500;
+}
 .iconbtn {
   background: var(--panel);
   color: var(--ink);

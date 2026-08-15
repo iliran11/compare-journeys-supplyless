@@ -2,10 +2,10 @@ export const PRESETS = [
   {
     name: 'Pinbus Colombia',
     routes: [
-      { fromSlug: 'barranquilla', toSlug: 'riohacha' },
-      { fromSlug: 'riohacha', toSlug: 'barranquilla' },
-      { fromSlug: 'cartagena', toSlug: 'santa-marta' },
-      { fromSlug: 'santa-marta', toSlug: 'cartagena' }
+      { fromSlug: 'barranquilla', toSlug: 'riohacha', countrySlug: 'colombia' },
+      { fromSlug: 'riohacha', toSlug: 'barranquilla', countrySlug: 'colombia' },
+      { fromSlug: 'cartagena', toSlug: 'santa-marta', countrySlug: 'colombia' },
+      { fromSlug: 'santa-marta', toSlug: 'cartagena', countrySlug: 'colombia' }
     ]
   }
 ];
