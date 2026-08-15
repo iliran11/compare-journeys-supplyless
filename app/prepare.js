@@ -1,3 +1,5 @@
+import kebabCase from 'lodash/kebabCase';
+
 export function prepareComparison(tcRaw, bawRaw) {
   const sides = [
     { label: 'tc', raw: tcRaw },
@@ -14,15 +16,7 @@ export function prepareComparison(tcRaw, bawRaw) {
         for (const journey of leg.journeys || []) {
           const departure = new Date(journey.departure.date).toLocaleString('sv-SE', { timeZone: journey.departure.timezone }).slice(0, 16);
           const arrival = new Date(journey.arrival.date).toLocaleString('sv-SE', { timeZone: journey.arrival.timezone }).slice(0, 16);
-          const companyLower = String(leg.companyName || '').toLowerCase();
-          let companyKey = '';
-          for (const ch of companyLower) {
-            const isLetter = ch >= 'a' && ch <= 'z';
-            const isDigit = ch >= '0' && ch <= '9';
-            if (isLetter || isDigit) {
-              companyKey += ch;
-            }
-          }
+          const companyKey = kebabCase(leg.companyName || '');
           rowsBySide[side.label].push({
             tripId: trip._id,
             company: leg.companyName || '',
