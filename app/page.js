@@ -51,7 +51,7 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate }) {
       <span className="op">{row.company}</span>
       <div className="meta">
         {row.lineClass}{row.fromStation ? ' · ' + row.fromStation : ''}
-        {typeof row.score === 'number' && row.score > 0 ? ' · score ' + Math.round(row.score) : ''}
+        {typeof row.score === 'number' && row.score > 0 ? ' · score ' + row.score : ''}
       </div>
       {row.tripId && (
         <div className="meta">
