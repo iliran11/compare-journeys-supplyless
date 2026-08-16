@@ -303,6 +303,11 @@ button.secondary {
   gap: 5px;
   cursor: pointer;
 }
+select,
+input[type="radio"],
+.card[data-pair] {
+  cursor: pointer;
+}
 .card.highlight {
   border-color: var(--match);
   box-shadow: 0 0 0 1px var(--match);

@@ -143,7 +143,9 @@ export default function Page() {
     const copy = rows.slice();
     if (sortBy === 'score') {
       copy.sort(function (a, b) {
-        if (b.score !== a.score) return b.score - a.score;
+        const rankA = a.scoreRank != null ? a.scoreRank : Infinity;
+        const rankB = b.scoreRank != null ? b.scoreRank : Infinity;
+        if (rankA !== rankB) return rankA - rankB;
         return a.departure < b.departure ? -1 : 1;
       });
     } else {
@@ -410,7 +412,7 @@ export default function Page() {
               {' '}Score
             </label>
           </div>
-          <div className="colheads"><span className="baw">BAW (PIN)</span><span className="tc">TC (TRV)</span></div>
+          <div className="colheads"><span className="baw">BAW</span><span className="tc">TC</span></div>
           <div className="board" ref={boardRef}>
             <svg className="wires" viewBox={wires.viewBox} preserveAspectRatio="none">
               {wires.paths.map((p, i) => (
@@ -470,32 +472,7 @@ export default function Page() {
                 </div>
               );
             })()}
-            {(() => {
-              const groupRow = result.matchedBaw.find((r) => r.groupId === detailGroup) || result.matchedTc.find((r) => r.groupId === detailGroup);
-              if (!groupRow) return null;
-              function padTime(time, minutesDelta) {
-                const parts = time.split(':');
-                let total = Number(parts[0]) * 60 + Number(parts[1]) + minutesDelta;
-                if (total < 0) total = 0;
-                if (total > 1439) total = 1439;
-                const h = String(Math.floor(total / 60)).padStart(2, '0');
-                const m = String(total % 60).padStart(2, '0');
-                return h + ':' + m;
-              }
-              const departureTime = groupRow.departure.slice(11);
-              const timeWindow = padTime(departureTime, -30) + '-' + padTime(departureTime, 30);
-              const supplierParam = groupRow.supplierFilterId ? '&suppliers=' + encodeURIComponent(groupRow.supplierFilterId) : '';
-              const filterParams = supplierParam + '&departureTime=' + timeWindow;
-              return (
-                <div className="explain">
-                  <span className="lbl">links</span>
-                  <a href={bawResultsUrl('PIN-BAW') + filterParams} target="_blank" rel="noreferrer">BAW search results (operator + {timeWindow}) ↗</a>
-                  {' · '}
-                  <a href={bawResultsUrl('PIN-TC') + filterParams} target="_blank" rel="noreferrer">TC search results (operator + {timeWindow}) ↗</a>
-                </div>
-              );
-            })()}
-            <div className="colheads"><span className="baw">BAW (PIN)</span><span className="tc">TC (TRV)</span></div>
+            <div className="colheads"><span className="baw">BAW</span><span className="tc">TC</span></div>
             <div className="cols modal-cols">
               <div className="col">
                 {result.matchedBaw.filter((r) => r.groupId === detailGroup).map((r, i) => (
@@ -535,7 +512,7 @@ export default function Page() {
                   <span className="lbl">diff</span>
                   <table className="diff-table">
                     <thead>
-                      <tr><th></th><th className="baw">BAW (PIN)</th><th className="tc">TC (TRV)</th></tr>
+                      <tr><th></th><th className="baw">BAW</th><th className="tc">TC</th></tr>
                     </thead>
                     <tbody>
                       <tr><td>Price</td><td>{bawRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td><td>{tcRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td></tr>
@@ -546,6 +523,31 @@ export default function Page() {
                       <tr><td>Pictures</td><td>{picturesText(bawRows)}</td><td>{picturesText(tcRows)}</td></tr>
                     </tbody>
                   </table>
+                </div>
+              );
+            })()}
+            {(() => {
+              const groupRow = result.matchedBaw.find((r) => r.groupId === detailGroup) || result.matchedTc.find((r) => r.groupId === detailGroup);
+              if (!groupRow) return null;
+              function padTime(time, minutesDelta) {
+                const parts = time.split(':');
+                let total = Number(parts[0]) * 60 + Number(parts[1]) + minutesDelta;
+                if (total < 0) total = 0;
+                if (total > 1439) total = 1439;
+                const h = String(Math.floor(total / 60)).padStart(2, '0');
+                const m = String(total % 60).padStart(2, '0');
+                return h + ':' + m;
+              }
+              const departureTime = groupRow.departure.slice(11);
+              const timeWindow = padTime(departureTime, -30) + '-' + padTime(departureTime, 30);
+              const supplierParam = groupRow.supplierFilterId ? '&suppliers=' + encodeURIComponent(groupRow.supplierFilterId) : '';
+              const filterParams = supplierParam + '&departureTime=' + timeWindow;
+              return (
+                <div className="explain">
+                  <span className="lbl">links</span>
+                  <a href={bawResultsUrl('PIN-BAW') + filterParams} target="_blank" rel="noreferrer">BAW search results (operator + {timeWindow}) ↗</a>
+                  {' · '}
+                  <a href={bawResultsUrl('PIN-TC') + filterParams} target="_blank" rel="noreferrer">TC search results (operator + {timeWindow}) ↗</a>
                 </div>
               );
             })()}
