@@ -4,7 +4,62 @@ import { useEffect, useRef, useState } from 'react';
 import { PRESETS } from './presets';
 import { prepareComparison } from './prepare';
 
-function Card({ row, side, unmatched, pairId, activePair, onActivate }) {
+function DetailCard({ row, side }) {
+  return (
+    <div className={'card detail ' + side}>
+      <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
+      <span className="lbl">operator</span><span className="op">{row.company}</span>
+      <div className="detail-sections">
+        <div className="detail-section">
+          <div className="section-title">Departure</div>
+          <div><span className="lbl">time</span><span className="time">{row.departure.slice(11)}</span></div>
+          <div><span className="lbl">station</span><span className="val">{row.fromStation || '—'}</span></div>
+        </div>
+        <div className="detail-section">
+          <div className="section-title">Arrival</div>
+          <div><span className="lbl">time</span><span className="time">{row.arrival.slice(11)}</span></div>
+          <div><span className="lbl">station</span><span className="val">{row.toStation || '—'}</span></div>
+        </div>
+      </div>
+      <div className="detail-section">
+        <div className="section-title">Ranking</div>
+        <div><span className="lbl">score</span><span className="val">{typeof row.score === 'number' && row.score > 0 ? row.score : '—'}</span></div>
+        <div><span className="lbl">rank by score</span><span className="val">{row.scoreRank != null ? '#' + row.scoreRank : '—'}</span></div>
+      </div>
+      <div className="detail-grid">
+        <div><span className="lbl">vehicle class</span><span className="val">{row.lineClass || '—'}</span></div>
+        <div><span className="lbl">vehicle type</span><span className="val">{row.vehicleType || '—'}</span></div>
+        {row.tripId && (
+          <div>
+            <span className="lbl">admin</span>
+            <a
+              className="triplink"
+              href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {row.tripId} ↗
+            </a>
+          </div>
+        )}
+      </div>
+      {row.pictures && row.pictures.length > 0 && (
+        <div className="detail-section pictures-section">
+          <div className="section-title">Pictures</div>
+          <div className="pictures">
+            {row.pictures.map((url, i) => (
+              <a key={i} href={url} target="_blank" rel="noreferrer">
+                <img src={url} alt={row.company + ' picture ' + (i + 1)} loading="lazy" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) {
   let className = 'card ' + side + (unmatched ? ' unmatched' : '');
   if (pairId != null && activePair != null) {
     className += pairId === activePair ? ' highlight' : ' dim';
@@ -15,28 +70,22 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate }) {
       data-pair={pairId != null ? pairId : undefined}
       onMouseEnter={onActivate ? () => onActivate(pairId) : undefined}
       onMouseLeave={onActivate ? () => onActivate(null) : undefined}
-      onClick={onActivate ? () => onActivate(pairId) : undefined}
+      onClick={onOpen ? () => onOpen(pairId) : undefined}
     >
-      <span className="price">{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
-      <span className="time">{row.departure.slice(11)}</span> → {row.arrival.slice(11)}{' '}
-      <span className="op">{row.company}</span>
-      <div className="meta">
-        {row.lineClass}{row.fromStation ? ' · ' + row.fromStation : ''}
-        {typeof row.score === 'number' && row.score > 0 ? ' · score ' + row.score : ''}
-      </div>
-      {row.tripId && (
-        <div className="meta">
-          <a
-            className="triplink"
-            href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {row.tripId} ↗
-          </a>
+      <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
+      <span className="lbl">operator</span><span className="op">{row.company}</span>
+      <div className="detail-sections">
+        <div className="detail-section">
+          <div className="section-title">Departure</div>
+          <div><span className="lbl">time</span><span className="time">{row.departure.slice(11)}</span></div>
+          <div><span className="lbl">station</span><span className="val">{row.fromStation || '—'}</span></div>
         </div>
-      )}
+        <div className="detail-section">
+          <div className="section-title">Arrival</div>
+          <div><span className="lbl">time</span><span className="time">{row.arrival.slice(11)}</span></div>
+          <div><span className="lbl">station</span><span className="val">{row.toStation || '—'}</span></div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -54,6 +103,14 @@ export default function Page() {
   const [promptExpanded, setPromptExpanded] = useState(false);
   const [sortBy, setSortBy] = useState('departure');
   const [activePair, setActivePair] = useState(null);
+  const [detailGroup, setDetailGroup] = useState(null);
+
+  useEffect(() => {
+    if (detailGroup == null) return;
+    function onKey(e) { if (e.key === 'Escape') setDetailGroup(null); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [detailGroup]);
 
   const config = {
     tcCode: 'TRV',
@@ -82,15 +139,15 @@ export default function Page() {
     return null;
   }
 
-  function sortSide(pairs, side) {
-    const copy = pairs.slice();
+  function sortRows(rows) {
+    const copy = rows.slice();
     if (sortBy === 'score') {
       copy.sort(function (a, b) {
-        if (b[side].score !== a[side].score) return b[side].score - a[side].score;
-        return a[side].departure < b[side].departure ? -1 : 1;
+        if (b.score !== a.score) return b.score - a.score;
+        return a.departure < b.departure ? -1 : 1;
       });
     } else {
-      copy.sort(function (a, b) { return a[side].departure < b[side].departure ? -1 : 1; });
+      copy.sort(function (a, b) { return a.departure < b.departure ? -1 : 1; });
     }
     return copy;
   }
@@ -110,26 +167,29 @@ export default function Page() {
     const board = boardRef.current;
     if (!board || !tcColRef.current || !bawColRef.current) return;
     const boardRect = board.getBoundingClientRect();
-    const rightByPair = new Map();
-    for (const el of bawColRef.current.children) {
-      if (el.dataset && el.dataset.pair != null) rightByPair.set(el.dataset.pair, el);
-    }
-    const paths = [];
+    const rightByGroup = new Map();
     for (const el of tcColRef.current.children) {
       if (!el.dataset || el.dataset.pair == null) continue;
-      const other = rightByPair.get(el.dataset.pair);
-      if (!other) continue;
-      const a = el.getBoundingClientRect();
-      const b = other.getBoundingClientRect();
-      const x1 = a.right - boardRect.left;
-      const y1 = a.top + a.height / 2 - boardRect.top;
-      const x2 = b.left - boardRect.left;
-      const y2 = b.top + b.height / 2 - boardRect.top;
-      const mx = (x1 + x2) / 2;
-      paths.push({
-        pairId: Number(el.dataset.pair),
-        d: 'M ' + x1 + ' ' + y1 + ' C ' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2
-      });
+      if (!rightByGroup.has(el.dataset.pair)) rightByGroup.set(el.dataset.pair, []);
+      rightByGroup.get(el.dataset.pair).push(el);
+    }
+    const paths = [];
+    for (const el of bawColRef.current.children) {
+      if (!el.dataset || el.dataset.pair == null) continue;
+      const others = rightByGroup.get(el.dataset.pair) || [];
+      for (const other of others) {
+        const a = el.getBoundingClientRect();
+        const b = other.getBoundingClientRect();
+        const x1 = a.right - boardRect.left;
+        const y1 = a.top + a.height / 2 - boardRect.top;
+        const x2 = b.left - boardRect.left;
+        const y2 = b.top + b.height / 2 - boardRect.top;
+        const mx = (x1 + x2) / 2;
+        paths.push({
+          pairId: Number(el.dataset.pair),
+          d: 'M ' + x1 + ' ' + y1 + ' C ' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2
+        });
+      }
     }
     setWires({ viewBox: '0 0 ' + boardRect.width + ' ' + boardRect.height, paths: paths });
   }
@@ -138,15 +198,24 @@ export default function Page() {
     if (!result) return;
     const raf = requestAnimationFrame(drawWires);
     window.addEventListener('resize', drawWires);
+    const observer = new ResizeObserver(drawWires);
+    if (boardRef.current) observer.observe(boardRef.current);
+    if (tcColRef.current) observer.observe(tcColRef.current);
+    if (bawColRef.current) observer.observe(bawColRef.current);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', drawWires);
+      observer.disconnect();
     };
   }, [result, sortBy]);
 
+  useEffect(() => {
+    run();
+  }, []);
+
   async function run() {
     setLoading(true);
-    setStatus('Searching both sources…');
+    setStatus('');
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
@@ -178,7 +247,7 @@ export default function Page() {
 
       setActivePair(null);
       setResult(prepared);
-      setStatus('TC: ' + prepared.tcCount + ' journeys · BAW: ' + prepared.bawCount + ' journeys · matched: ' + prepared.pairs.length);
+      setStatus('TC: ' + prepared.tcCount + ' journeys · BAW: ' + prepared.bawCount + ' journeys · matched groups: ' + prepared.matchedGroups);
     } catch (err) {
       setStatus('Error: ' + err.message);
     }
@@ -188,7 +257,7 @@ export default function Page() {
   return (
     <main>
       <h1>TC vs BAW Journey Matcher</h1>
-      <p className="sub">Fires both composite searches, matches journeys by operator + departure time, links the pairs.</p>
+      <p className="sub">Fires both composite searches, matches journeys by operator + departure + arrival time, links every counterpart (many-to-many).</p>
 
       <div className="controls">
         <div>
@@ -221,6 +290,20 @@ export default function Page() {
         </button>
         <span className="status">{status}</span>
       </div>
+
+      {loading && (
+        <div className="loader-overlay">
+          <div className="loader-box">
+            <svg className="spinner" width="52" height="52" viewBox="0 0 52 52" fill="none">
+              <circle cx="26" cy="26" r="21" stroke="var(--line)" strokeWidth="4" />
+              <path d="M 26 5 A 21 21 0 0 1 47 26" stroke="var(--tc)" strokeWidth="4" strokeLinecap="round" />
+              <path d="M 26 47 A 21 21 0 0 1 5 26" stroke="var(--baw)" strokeWidth="4" strokeLinecap="round" />
+            </svg>
+            <div className="loader-title">Comparing live inventory</div>
+            <div className="loader-hint">Fetching results from the TC and BAW integrations…</div>
+          </div>
+        </div>
+      )}
 
       {showConfig && (
         <div className="config">
@@ -312,6 +395,10 @@ export default function Page() {
 
       {result && (
         <div>
+          <div className="explain">
+            <span className="lbl">matching key</span>
+            <b>operator + departure time + arrival time</b>
+          </div>
           <div className="sortbar">
             <span className="sortbar-label">Sort</span>
             <label>
@@ -323,12 +410,12 @@ export default function Page() {
               {' '}Score
             </label>
           </div>
-          <div className="colheads"><span className="tc">TC (TRV)</span><span className="baw">BAW (PIN)</span></div>
+          <div className="colheads"><span className="baw">BAW (PIN)</span><span className="tc">TC (TRV)</span></div>
           <div className="board" ref={boardRef}>
             <svg className="wires" viewBox={wires.viewBox} preserveAspectRatio="none">
-              {wires.paths.map((p) => (
+              {wires.paths.map((p, i) => (
                 <path
-                  key={p.pairId}
+                  key={i}
                   d={p.d}
                   fill="none"
                   stroke="var(--match)"
@@ -338,16 +425,16 @@ export default function Page() {
               ))}
             </svg>
             <div className="cols">
-              <div className="col" ref={tcColRef}>
-                {result.pairs.length === 0 && <div className="empty">No matches</div>}
-                {sortSide(result.pairs, 'tc').map((p) => (
-                  <Card key={p.id} row={p.tc} side="tc" unmatched={false} pairId={p.id} activePair={activePair} onActivate={setActivePair} />
+              <div className="col" ref={bawColRef}>
+                {result.matchedBaw.length === 0 && <div className="empty">No matches</div>}
+                {sortRows(result.matchedBaw).map((row, i) => (
+                  <Card key={i} row={row} side="baw" unmatched={false} pairId={row.groupId} activePair={activePair} onActivate={setActivePair} onOpen={setDetailGroup} />
                 ))}
               </div>
-              <div className="col" ref={bawColRef}>
-                {result.pairs.length === 0 && <div className="empty">No matches</div>}
-                {sortSide(result.pairs, 'baw').map((p) => (
-                  <Card key={p.id} row={p.baw} side="baw" unmatched={false} pairId={p.id} activePair={activePair} onActivate={setActivePair} />
+              <div className="col" ref={tcColRef}>
+                {result.matchedTc.length === 0 && <div className="empty">No matches</div>}
+                {sortRows(result.matchedTc).map((row, i) => (
+                  <Card key={i} row={row} side="tc" unmatched={false} pairId={row.groupId} activePair={activePair} onActivate={setActivePair} onOpen={setDetailGroup} />
                 ))}
               </div>
             </div>
@@ -355,13 +442,113 @@ export default function Page() {
           <div className="divider">Unmatched — no counterpart on the other side</div>
           <div className="cols">
             <div className="col">
-              {result.tcOnly.length === 0 && <div className="empty">None</div>}
-              {result.tcOnly.map((r, i) => <Card key={i} row={r} side="tc" unmatched={true} />)}
-            </div>
-            <div className="col">
               {result.bawOnly.length === 0 && <div className="empty">None</div>}
               {result.bawOnly.map((r, i) => <Card key={i} row={r} side="baw" unmatched={true} />)}
             </div>
+            <div className="col">
+              {result.tcOnly.length === 0 && <div className="empty">None</div>}
+              {result.tcOnly.map((r, i) => <Card key={i} row={r} side="tc" unmatched={true} />)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {result && detailGroup != null && (
+        <div className="overlay" onClick={() => setDetailGroup(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <div className="config-title">Matching group — side by side</div>
+              <button className="secondary" onClick={() => setDetailGroup(null)}>Close ✕</button>
+            </div>
+            {(() => {
+              const groupRow = result.matchedBaw.find((r) => r.groupId === detailGroup) || result.matchedTc.find((r) => r.groupId === detailGroup);
+              if (!groupRow) return null;
+              return (
+                <div className="explain">
+                  <span className="lbl">matching key</span>
+                  <b>{groupRow.company}</b> · departure <b>{groupRow.departure.slice(11)}</b> · arrival <b>{groupRow.arrival.slice(11)}</b>
+                </div>
+              );
+            })()}
+            {(() => {
+              const groupRow = result.matchedBaw.find((r) => r.groupId === detailGroup) || result.matchedTc.find((r) => r.groupId === detailGroup);
+              if (!groupRow) return null;
+              function padTime(time, minutesDelta) {
+                const parts = time.split(':');
+                let total = Number(parts[0]) * 60 + Number(parts[1]) + minutesDelta;
+                if (total < 0) total = 0;
+                if (total > 1439) total = 1439;
+                const h = String(Math.floor(total / 60)).padStart(2, '0');
+                const m = String(total % 60).padStart(2, '0');
+                return h + ':' + m;
+              }
+              const departureTime = groupRow.departure.slice(11);
+              const timeWindow = padTime(departureTime, -30) + '-' + padTime(departureTime, 30);
+              const supplierParam = groupRow.supplierFilterId ? '&suppliers=' + encodeURIComponent(groupRow.supplierFilterId) : '';
+              const filterParams = supplierParam + '&departureTime=' + timeWindow;
+              return (
+                <div className="explain">
+                  <span className="lbl">links</span>
+                  <a href={bawResultsUrl('PIN-BAW') + filterParams} target="_blank" rel="noreferrer">BAW search results (operator + {timeWindow}) ↗</a>
+                  {' · '}
+                  <a href={bawResultsUrl('PIN-TC') + filterParams} target="_blank" rel="noreferrer">TC search results (operator + {timeWindow}) ↗</a>
+                </div>
+              );
+            })()}
+            <div className="colheads"><span className="baw">BAW (PIN)</span><span className="tc">TC (TRV)</span></div>
+            <div className="cols modal-cols">
+              <div className="col">
+                {result.matchedBaw.filter((r) => r.groupId === detailGroup).map((r, i) => (
+                  <DetailCard key={i} row={r} side="baw" />
+                ))}
+              </div>
+              <div className="col">
+                {result.matchedTc.filter((r) => r.groupId === detailGroup).map((r, i) => (
+                  <DetailCard key={i} row={r} side="tc" />
+                ))}
+              </div>
+            </div>
+            {(() => {
+              const bawRows = result.matchedBaw.filter((r) => r.groupId === detailGroup);
+              const tcRows = result.matchedTc.filter((r) => r.groupId === detailGroup);
+              function scoreText(rows) {
+                return rows.map((r) => {
+                  const score = typeof r.score === 'number' && r.score > 0 ? Math.round(r.score) : '—';
+                  const rank = r.scoreRank != null ? '#' + r.scoreRank : '—';
+                  return score + ' (rank ' + rank + ')';
+                }).join(' · ') || '—';
+              }
+              function classText(rows) {
+                return rows.map((r) => r.lineClass || '—').join(' · ') || '—';
+              }
+              function picturesText(rows) {
+                return rows.map((r) => (r.pictures ? r.pictures.length : 0) + ' pictures').join(' · ') || '—';
+              }
+              function stationsText(rows) {
+                return rows.map((r) => (r.fromStation || '—') + ' → ' + (r.toStation || '—')).join(' · ') || '—';
+              }
+              function vehicleTypeText(rows) {
+                return rows.map((r) => r.vehicleType || '—').join(' · ') || '—';
+              }
+              return (
+                <div className="explain diff">
+                  <span className="lbl">diff</span>
+                  <table className="diff-table">
+                    <thead>
+                      <tr><th></th><th className="baw">BAW (PIN)</th><th className="tc">TC (TRV)</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Price</td><td>{bawRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td><td>{tcRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td></tr>
+                      <tr><td>Ranking</td><td>{scoreText(bawRows)}</td><td>{scoreText(tcRows)}</td></tr>
+                      <tr><td>Stations</td><td>{stationsText(bawRows)}</td><td>{stationsText(tcRows)}</td></tr>
+                      <tr><td>Class</td><td>{classText(bawRows)}</td><td>{classText(tcRows)}</td></tr>
+                      <tr><td>Vehicle type</td><td>{vehicleTypeText(bawRows)}</td><td>{vehicleTypeText(tcRows)}</td></tr>
+                      <tr><td>Pictures</td><td>{picturesText(bawRows)}</td><td>{picturesText(tcRows)}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}

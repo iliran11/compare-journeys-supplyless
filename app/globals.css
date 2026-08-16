@@ -47,6 +47,11 @@ h1 {
   align-items: flex-end;
   margin: 18px 0 26px;
   flex-wrap: wrap;
+  max-width: 1100px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
 }
 .controls input {
   background: var(--panel);
@@ -312,6 +317,8 @@ button.secondary {
   margin-bottom: 8px;
 }
 .colheads span {
+  width: 40%;
+  text-align: center;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -404,4 +411,193 @@ button.secondary {
 .empty {
   color: var(--muted);
   font-size: 13px;
+}
+.card .val {
+  font-weight: 600;
+}
+.explain {
+  max-width: 1100px;
+  margin: 16px 0 10px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.explain b {
+  color: var(--ink);
+}
+.explain .lbl {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.diff-table th,
+.diff-table td {
+  text-align: left;
+  padding: 4px 10px 4px 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.diff-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.diff-table td:first-child {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.diff-table th.baw {
+  color: var(--baw);
+}
+.diff-table th.tc {
+  color: var(--tc);
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.modal {
+  background: var(--bg, #faf9f5);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  width: 94vw;
+  height: 90vh;
+  padding: 20px 26px;
+  overflow-y: auto;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.modal .colheads,
+.modal .cols {
+  max-width: none;
+}
+.modal-cols {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+.modal-cols .col {
+  width: 48%;
+}
+.card.detail {
+  cursor: default;
+}
+.detail-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 10px;
+}
+.detail-section {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.detail-section .section-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.pictures-section {
+  margin-top: 10px;
+}
+.pictures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pictures img {
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  display: block;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  font-size: 13px;
+}
+.card .lbl {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  opacity: 0.75;
+  margin-right: 3px;
+}
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+.loader-box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 30px 38px;
+  text-align: center;
+  max-width: 340px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+.loader-box .loader-title {
+  font-weight: 700;
+  margin-top: 14px;
+}
+.loader-box .loader-hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.spinner {
+  animation: spin 1.4s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.card .multi-warn {
+  float: right;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a5a00;
+  background: #fdf0d5;
+  border: 1px solid #e6b85c;
+  cursor: help;
 }

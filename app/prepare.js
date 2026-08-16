@@ -20,49 +20,81 @@ export function prepareComparison(tcRaw, bawRaw) {
           rowsBySide[side.label].push({
             tripId: trip._id,
             company: leg.companyName || '',
+            supplierFilterId: leg.supplier && leg.supplier.id ? leg.supplier.id : companyKey,
             lineClass: leg.lineClass || '',
+            vehicleType: leg.lineType || leg.type || '',
             fromStation: leg.from ? leg.from.name : '',
+            toStation: leg.to ? leg.to.name : '',
             departure: departure,
             arrival: arrival,
             price: journey.price ? journey.price.amount : null,
             score: typeof trip.originalScore === 'number' ? trip.originalScore : (typeof trip.score === 'number' ? trip.score : 0),
-            matchKey: companyKey + '|' + departure
+            pictures: (leg.pictures || []).map(function (p) { return p && p.url ? 'https://cdn.bookaway.com/media/files/' + p.url : ''; }).filter(Boolean),
+            matchKey: companyKey + '|' + departure + '|' + arrival
           });
         }
       }
     }
     rowsBySide[side.label].sort(function (a, b) { return a.departure < b.departure ? -1 : 1; });
+
+    const byScore = rowsBySide[side.label].slice().sort(function (a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.departure < b.departure ? -1 : 1;
+    });
+    for (let i = 0; i < byScore.length; i++) {
+      byScore[i].scoreRank = i + 1;
+    }
   }
 
   const tcRows = rowsBySide.tc;
   const bawRows = rowsBySide.baw;
 
-  const bawByKey = new Map();
+  const bawKeys = new Set();
   for (const row of bawRows) {
-    bawByKey.set(row.matchKey, row);
+    bawKeys.add(row.matchKey);
+  }
+  const tcKeys = new Set();
+  for (const row of tcRows) {
+    tcKeys.add(row.matchKey);
   }
 
-  const pairs = [];
+  const groupIdByKey = new Map();
+  const matchedTc = [];
   const tcOnly = [];
-  const usedBawKeys = new Set();
   for (const row of tcRows) {
-    if (bawByKey.has(row.matchKey) && !usedBawKeys.has(row.matchKey)) {
-      pairs.push({ tc: row, baw: bawByKey.get(row.matchKey) });
-      usedBawKeys.add(row.matchKey);
+    if (bawKeys.has(row.matchKey)) {
+      if (!groupIdByKey.has(row.matchKey)) {
+        groupIdByKey.set(row.matchKey, groupIdByKey.size);
+      }
+      matchedTc.push({ ...row, groupId: groupIdByKey.get(row.matchKey) });
     } else {
       tcOnly.push(row);
     }
   }
-  const bawOnly = bawRows.filter(function (row) { return !usedBawKeys.has(row.matchKey); });
 
-  pairs.sort(function (a, b) { return a.tc.departure < b.tc.departure ? -1 : 1; });
-  pairs.forEach(function (pair, index) { pair.id = index; });
+  const tcCountByGroup = new Map();
+  for (const row of matchedTc) {
+    tcCountByGroup.set(row.groupId, (tcCountByGroup.get(row.groupId) || 0) + 1);
+  }
+
+  const matchedBaw = [];
+  const bawOnly = [];
+  for (const row of bawRows) {
+    if (tcKeys.has(row.matchKey)) {
+      const groupId = groupIdByKey.get(row.matchKey);
+      matchedBaw.push({ ...row, groupId: groupId, tcMatchCount: tcCountByGroup.get(groupId) || 0 });
+    } else {
+      bawOnly.push(row);
+    }
+  }
 
   return {
-    pairs: pairs,
+    matchedTc: matchedTc,
+    matchedBaw: matchedBaw,
     tcOnly: tcOnly,
     bawOnly: bawOnly,
     tcCount: tcRows.length,
-    bawCount: bawRows.length
+    bawCount: bawRows.length,
+    matchedGroups: groupIdByKey.size
   };
 }
