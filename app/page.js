@@ -5,6 +5,7 @@ import { PRESETS } from './presets';
 import { prepareComparison } from './prepare';
 import ViewRoot from './views/ViewRoot';
 import ViewJourneyCompare from './views/ViewJourneyCompare';
+import ViewTabBar from './views/ViewTabBar';
 
 export default function Page() {
   const [fromSlug, setFromSlug] = useState('barranquilla');
@@ -24,6 +25,7 @@ export default function Page() {
   const [sortBy, setSortBy] = useState('departure');
   const [activePair, setActivePair] = useState(null);
   const [detailGroup, setDetailGroup] = useState(null);
+  const [activeTab, setActiveTab] = useState('compare');
 
   const config = {
     tcCode: 'TRV',
@@ -105,9 +107,6 @@ export default function Page() {
 
   return (
     <main>
-      <h1>TC vs BAW Journey Matcher</h1>
-      <p className="sub">Fires both composite searches, matches journeys by operator + departure + arrival time, links every counterpart (many-to-many).</p>
-
       <div className="controls">
         <div>
           <label htmlFor="route">Route</label>
@@ -242,7 +241,9 @@ export default function Page() {
         </div>
       )}
 
-      {result && (
+      {result && <ViewTabBar activeTab={activeTab} setActiveTab={setActiveTab} />}
+
+      {result && activeTab === 'compare' && (
         <ViewRoot
           result={result}
           sortBy={sortBy}
@@ -251,6 +252,10 @@ export default function Page() {
           setActivePair={setActivePair}
           onOpenJourney={setDetailGroup}
         />
+      )}
+
+      {result && activeTab === 'scoring' && (
+        <div className="explain">Scoring — coming soon.</div>
       )}
 
       {result && detailGroup != null && (

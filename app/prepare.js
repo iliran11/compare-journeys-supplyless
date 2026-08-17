@@ -30,7 +30,8 @@ export function prepareComparison(tcRaw, bawRaw) {
             price: journey.price ? journey.price.amount : null,
             score: typeof trip.originalScore === 'number' ? trip.originalScore : (typeof trip.score === 'number' ? trip.score : 0),
             pictures: (leg.pictures || []).map(function (p) { return p && p.url ? 'https://cdn.bookaway.com/media/files/' + p.url : ''; }).filter(Boolean),
-            matchKey: companyKey + '|' + departure + '|' + arrival
+            matchKey: companyKey + '|' + departure + '|' + arrival,
+            raw: { trip: trip, leg: leg, journey: journey }
           });
         }
       }

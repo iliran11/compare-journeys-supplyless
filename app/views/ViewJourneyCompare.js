@@ -128,7 +128,7 @@ export default function ViewJourneyCompare({ result, detailGroup, onClose, bawRe
           <span className="lbl">data</span>
           <button
             className="secondary"
-            onClick={() => copy(JSON.stringify({ baw: bawRows, tc: tcRows }, null, 2))}
+            onClick={() => copy(JSON.stringify({ baw: bawRows.map((r) => r.raw), tc: tcRows.map((r) => r.raw) }, null, 2))}
           >
             {copied ? 'Copied ✓' : 'Copy raw data 📋'}
           </button>

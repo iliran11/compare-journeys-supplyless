@@ -1,3 +1,5 @@
+# Look and feel
+backoffice system. Not a normal site. Prefer functionality and ease of navigation.
 
 # Way of conduct
 1. Agent will never commit, will never push. Never start a server.
