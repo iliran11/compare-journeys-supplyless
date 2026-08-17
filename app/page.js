@@ -1,94 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PRESETS } from './presets';
 import { prepareComparison } from './prepare';
-
-function DetailCard({ row, side }) {
-  return (
-    <div className={'card detail ' + side}>
-      <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
-      <span className="lbl">operator</span><span className="op">{row.company}</span>
-      <div className="detail-sections">
-        <div className="detail-section">
-          <div className="section-title">Departure</div>
-          <div><span className="lbl">time</span><span className="time">{row.departure.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.fromStation || '—'}</span></div>
-        </div>
-        <div className="detail-section">
-          <div className="section-title">Arrival</div>
-          <div><span className="lbl">time</span><span className="time">{row.arrival.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.toStation || '—'}</span></div>
-        </div>
-      </div>
-      <div className="detail-section">
-        <div className="section-title">Ranking</div>
-        <div><span className="lbl">score</span><span className="val">{typeof row.score === 'number' && row.score > 0 ? row.score : '—'}</span></div>
-        <div><span className="lbl">rank by score</span><span className="val">{row.scoreRank != null ? '#' + row.scoreRank : '—'}</span></div>
-      </div>
-      <div className="detail-grid">
-        <div><span className="lbl">vehicle class</span><span className="val">{row.lineClass || '—'}</span></div>
-        <div><span className="lbl">vehicle type</span><span className="val">{row.vehicleType || '—'}</span></div>
-        {row.tripId && (
-          <div>
-            <span className="lbl">admin</span>
-            <a
-              className="triplink"
-              href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {row.tripId} ↗
-            </a>
-          </div>
-        )}
-      </div>
-      {row.pictures && row.pictures.length > 0 && (
-        <div className="detail-section pictures-section">
-          <div className="section-title">Pictures</div>
-          <div className="pictures">
-            {row.pictures.map((url, i) => (
-              <a key={i} href={url} target="_blank" rel="noreferrer">
-                <img src={url} alt={row.company + ' picture ' + (i + 1)} loading="lazy" />
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) {
-  let className = 'card ' + side + (unmatched ? ' unmatched' : '');
-  if (pairId != null && activePair != null) {
-    className += pairId === activePair ? ' highlight' : ' dim';
-  }
-  return (
-    <div
-      className={className}
-      data-pair={pairId != null ? pairId : undefined}
-      onMouseEnter={onActivate ? () => onActivate(pairId) : undefined}
-      onMouseLeave={onActivate ? () => onActivate(null) : undefined}
-      onClick={onOpen ? () => onOpen(pairId) : undefined}
-    >
-      <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
-      <span className="lbl">operator</span><span className="op">{row.company}</span>
-      <div className="detail-sections">
-        <div className="detail-section">
-          <div className="section-title">Departure</div>
-          <div><span className="lbl">time</span><span className="time">{row.departure.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.fromStation || '—'}</span></div>
-        </div>
-        <div className="detail-section">
-          <div className="section-title">Arrival</div>
-          <div><span className="lbl">time</span><span className="time">{row.arrival.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.toStation || '—'}</span></div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import RootCompare from './rootCompare';
+import JourneyCompare from './journeyCompare';
 
 export default function Page() {
   const [fromSlug, setFromSlug] = useState('barranquilla');
@@ -104,13 +20,6 @@ export default function Page() {
   const [sortBy, setSortBy] = useState('departure');
   const [activePair, setActivePair] = useState(null);
   const [detailGroup, setDetailGroup] = useState(null);
-
-  useEffect(() => {
-    if (detailGroup == null) return;
-    function onKey(e) { if (e.key === 'Escape') setDetailGroup(null); }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [detailGroup]);
 
   const config = {
     tcCode: 'TRV',
@@ -139,77 +48,11 @@ export default function Page() {
     return null;
   }
 
-  function sortRows(rows) {
-    const copy = rows.slice();
-    if (sortBy === 'score') {
-      copy.sort(function (a, b) {
-        const rankA = a.scoreRank != null ? a.scoreRank : Infinity;
-        const rankB = b.scoreRank != null ? b.scoreRank : Infinity;
-        if (rankA !== rankB) return rankA - rankB;
-        return a.departure < b.departure ? -1 : 1;
-      });
-    } else {
-      copy.sort(function (a, b) { return a.departure < b.departure ? -1 : 1; });
-    }
-    return copy;
-  }
-
   function bawResultsUrl(debugValue) {
     const route = currentRoute();
     const country = route && route.countrySlug ? route.countrySlug : 'colombia';
     return 'https://www.bookaway.com/s/' + country + '/' + fromSlug + '-to-' + toSlug + '?departureDate=' + date.trim() + '&debug=' + debugValue;
   }
-  const [wires, setWires] = useState({ viewBox: '0 0 0 0', paths: [] });
-
-  const boardRef = useRef(null);
-  const tcColRef = useRef(null);
-  const bawColRef = useRef(null);
-
-  function drawWires() {
-    const board = boardRef.current;
-    if (!board || !tcColRef.current || !bawColRef.current) return;
-    const boardRect = board.getBoundingClientRect();
-    const rightByGroup = new Map();
-    for (const el of tcColRef.current.children) {
-      if (!el.dataset || el.dataset.pair == null) continue;
-      if (!rightByGroup.has(el.dataset.pair)) rightByGroup.set(el.dataset.pair, []);
-      rightByGroup.get(el.dataset.pair).push(el);
-    }
-    const paths = [];
-    for (const el of bawColRef.current.children) {
-      if (!el.dataset || el.dataset.pair == null) continue;
-      const others = rightByGroup.get(el.dataset.pair) || [];
-      for (const other of others) {
-        const a = el.getBoundingClientRect();
-        const b = other.getBoundingClientRect();
-        const x1 = a.right - boardRect.left;
-        const y1 = a.top + a.height / 2 - boardRect.top;
-        const x2 = b.left - boardRect.left;
-        const y2 = b.top + b.height / 2 - boardRect.top;
-        const mx = (x1 + x2) / 2;
-        paths.push({
-          pairId: Number(el.dataset.pair),
-          d: 'M ' + x1 + ' ' + y1 + ' C ' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2
-        });
-      }
-    }
-    setWires({ viewBox: '0 0 ' + boardRect.width + ' ' + boardRect.height, paths: paths });
-  }
-
-  useEffect(() => {
-    if (!result) return;
-    const raf = requestAnimationFrame(drawWires);
-    window.addEventListener('resize', drawWires);
-    const observer = new ResizeObserver(drawWires);
-    if (boardRef.current) observer.observe(boardRef.current);
-    if (tcColRef.current) observer.observe(tcColRef.current);
-    if (bawColRef.current) observer.observe(bawColRef.current);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', drawWires);
-      observer.disconnect();
-    };
-  }, [result, sortBy]);
 
   useEffect(() => {
     run();
@@ -396,163 +239,23 @@ export default function Page() {
       )}
 
       {result && (
-        <div>
-          <div className="explain">
-            <span className="lbl">matching key</span>
-            <b>operator + departure time + arrival time</b>
-          </div>
-          <div className="sortbar">
-            <span className="sortbar-label">Sort</span>
-            <label>
-              <input type="radio" name="sortBy" value="departure" checked={sortBy === 'departure'} onChange={() => setSortBy('departure')} />
-              {' '}Departure time
-            </label>
-            <label>
-              <input type="radio" name="sortBy" value="score" checked={sortBy === 'score'} onChange={() => setSortBy('score')} />
-              {' '}Score
-            </label>
-          </div>
-          <div className="colheads"><span className="baw">BAW</span><span className="tc">TC</span></div>
-          <div className="board" ref={boardRef}>
-            <svg className="wires" viewBox={wires.viewBox} preserveAspectRatio="none">
-              {wires.paths.map((p, i) => (
-                <path
-                  key={i}
-                  d={p.d}
-                  fill="none"
-                  stroke="var(--match)"
-                  strokeWidth={activePair === p.pairId ? 2.5 : 1.5}
-                  opacity={activePair == null ? 0.7 : (activePair === p.pairId ? 1 : 0.12)}
-                />
-              ))}
-            </svg>
-            <div className="cols">
-              <div className="col" ref={bawColRef}>
-                {result.matchedBaw.length === 0 && <div className="empty">No matches</div>}
-                {sortRows(result.matchedBaw).map((row, i) => (
-                  <Card key={i} row={row} side="baw" unmatched={false} pairId={row.groupId} activePair={activePair} onActivate={setActivePair} onOpen={setDetailGroup} />
-                ))}
-              </div>
-              <div className="col" ref={tcColRef}>
-                {result.matchedTc.length === 0 && <div className="empty">No matches</div>}
-                {sortRows(result.matchedTc).map((row, i) => (
-                  <Card key={i} row={row} side="tc" unmatched={false} pairId={row.groupId} activePair={activePair} onActivate={setActivePair} onOpen={setDetailGroup} />
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="divider">Unmatched — no counterpart on the other side</div>
-          <div className="cols">
-            <div className="col">
-              {result.bawOnly.length === 0 && <div className="empty">None</div>}
-              {result.bawOnly.map((r, i) => <Card key={i} row={r} side="baw" unmatched={true} />)}
-            </div>
-            <div className="col">
-              {result.tcOnly.length === 0 && <div className="empty">None</div>}
-              {result.tcOnly.map((r, i) => <Card key={i} row={r} side="tc" unmatched={true} />)}
-            </div>
-          </div>
-        </div>
+        <RootCompare
+          result={result}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          activePair={activePair}
+          setActivePair={setActivePair}
+          onOpenJourney={setDetailGroup}
+        />
       )}
 
       {result && detailGroup != null && (
-        <div className="overlay" onClick={() => setDetailGroup(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-head">
-              <div className="config-title">Matching group — side by side</div>
-              <button className="secondary" onClick={() => setDetailGroup(null)}>Close ✕</button>
-            </div>
-            {(() => {
-              const groupRow = result.matchedBaw.find((r) => r.groupId === detailGroup) || result.matchedTc.find((r) => r.groupId === detailGroup);
-              if (!groupRow) return null;
-              return (
-                <div className="explain">
-                  <span className="lbl">matching key</span>
-                  <b>{groupRow.company}</b> · departure <b>{groupRow.departure.slice(11)}</b> · arrival <b>{groupRow.arrival.slice(11)}</b>
-                </div>
-              );
-            })()}
-            <div className="colheads"><span className="baw">BAW</span><span className="tc">TC</span></div>
-            <div className="cols modal-cols">
-              <div className="col">
-                {result.matchedBaw.filter((r) => r.groupId === detailGroup).map((r, i) => (
-                  <DetailCard key={i} row={r} side="baw" />
-                ))}
-              </div>
-              <div className="col">
-                {result.matchedTc.filter((r) => r.groupId === detailGroup).map((r, i) => (
-                  <DetailCard key={i} row={r} side="tc" />
-                ))}
-              </div>
-            </div>
-            {(() => {
-              const bawRows = result.matchedBaw.filter((r) => r.groupId === detailGroup);
-              const tcRows = result.matchedTc.filter((r) => r.groupId === detailGroup);
-              function scoreText(rows) {
-                return rows.map((r) => {
-                  const score = typeof r.score === 'number' && r.score > 0 ? Math.round(r.score) : '—';
-                  const rank = r.scoreRank != null ? '#' + r.scoreRank : '—';
-                  return score + ' (rank ' + rank + ')';
-                }).join(' · ') || '—';
-              }
-              function classText(rows) {
-                return rows.map((r) => r.lineClass || '—').join(' · ') || '—';
-              }
-              function picturesText(rows) {
-                return rows.map((r) => (r.pictures ? r.pictures.length : 0) + ' pictures').join(' · ') || '—';
-              }
-              function stationsText(rows) {
-                return rows.map((r) => (r.fromStation || '—') + ' → ' + (r.toStation || '—')).join(' · ') || '—';
-              }
-              function vehicleTypeText(rows) {
-                return rows.map((r) => r.vehicleType || '—').join(' · ') || '—';
-              }
-              return (
-                <div className="explain diff">
-                  <span className="lbl">diff</span>
-                  <table className="diff-table">
-                    <thead>
-                      <tr><th></th><th className="baw">BAW</th><th className="tc">TC</th></tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>Price</td><td>{bawRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td><td>{tcRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td></tr>
-                      <tr><td>Ranking</td><td>{scoreText(bawRows)}</td><td>{scoreText(tcRows)}</td></tr>
-                      <tr><td>Stations</td><td>{stationsText(bawRows)}</td><td>{stationsText(tcRows)}</td></tr>
-                      <tr><td>Class</td><td>{classText(bawRows)}</td><td>{classText(tcRows)}</td></tr>
-                      <tr><td>Vehicle type</td><td>{vehicleTypeText(bawRows)}</td><td>{vehicleTypeText(tcRows)}</td></tr>
-                      <tr><td>Pictures</td><td>{picturesText(bawRows)}</td><td>{picturesText(tcRows)}</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              );
-            })()}
-            {(() => {
-              const groupRow = result.matchedBaw.find((r) => r.groupId === detailGroup) || result.matchedTc.find((r) => r.groupId === detailGroup);
-              if (!groupRow) return null;
-              function padTime(time, minutesDelta) {
-                const parts = time.split(':');
-                let total = Number(parts[0]) * 60 + Number(parts[1]) + minutesDelta;
-                if (total < 0) total = 0;
-                if (total > 1439) total = 1439;
-                const h = String(Math.floor(total / 60)).padStart(2, '0');
-                const m = String(total % 60).padStart(2, '0');
-                return h + ':' + m;
-              }
-              const departureTime = groupRow.departure.slice(11);
-              const timeWindow = padTime(departureTime, -30) + '-' + padTime(departureTime, 30);
-              const supplierParam = groupRow.supplierFilterId ? '&suppliers=' + encodeURIComponent(groupRow.supplierFilterId) : '';
-              const filterParams = supplierParam + '&departureTime=' + timeWindow;
-              return (
-                <div className="explain">
-                  <span className="lbl">links</span>
-                  <a href={bawResultsUrl('PIN-BAW') + filterParams} target="_blank" rel="noreferrer">BAW search results (operator + {timeWindow}) ↗</a>
-                  {' · '}
-                  <a href={bawResultsUrl('PIN-TC') + filterParams} target="_blank" rel="noreferrer">TC search results (operator + {timeWindow}) ↗</a>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
+        <JourneyCompare
+          result={result}
+          detailGroup={detailGroup}
+          onClose={() => setDetailGroup(null)}
+          bawResultsUrl={bawResultsUrl}
+        />
       )}
     </main>
   );
