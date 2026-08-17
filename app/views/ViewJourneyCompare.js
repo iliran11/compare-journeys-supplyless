@@ -1,6 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import useEscapeKey from '../logic/useEscapeKey';
+import useCopyToClipboard from '../logic/useCopyToClipboard';
+import buildFilterParams from '../logic/buildFilterParams';
+import { scoreText, classText, picturesText, stationsText, vehicleTypeText, priceText } from '../logic/diffTexts';
 
 function DetailCard({ row, side }) {
   return (
@@ -57,54 +60,17 @@ function DetailCard({ row, side }) {
   );
 }
 
-export default function JourneyCompare({ result, detailGroup, onClose, bawResultsUrl }) {
-  const [copied, setCopied] = useState(false);
-  useEffect(() => {
-    function onKey(e) { if (e.key === 'Escape') onClose(); }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+export default function ViewJourneyCompare({ result, detailGroup, onClose, bawResultsUrl }) {
+  const { copied, copy } = useCopyToClipboard(1500);
+  useEscapeKey(onClose);
 
   const bawRows = result.matchedBaw.filter((r) => r.groupId === detailGroup);
   const tcRows = result.matchedTc.filter((r) => r.groupId === detailGroup);
   const groupRow = bawRows[0] || tcRows[0];
 
-  function scoreText(rows) {
-    return rows.map((r) => {
-      const score = typeof r.score === 'number' && r.score > 0 ? Math.round(r.score) : '—';
-      const rank = r.scoreRank != null ? '#' + r.scoreRank : '—';
-      return score + ' (rank ' + rank + ')';
-    }).join(' · ') || '—';
-  }
-  function classText(rows) {
-    return rows.map((r) => r.lineClass || '—').join(' · ') || '—';
-  }
-  function picturesText(rows) {
-    return rows.map((r) => (r.pictures ? r.pictures.length : 0) + ' pictures').join(' · ') || '—';
-  }
-  function stationsText(rows) {
-    return rows.map((r) => (r.fromStation || '—') + ' → ' + (r.toStation || '—')).join(' · ') || '—';
-  }
-  function vehicleTypeText(rows) {
-    return rows.map((r) => r.vehicleType || '—').join(' · ') || '—';
-  }
-
-  function padTime(time, minutesDelta) {
-    const parts = time.split(':');
-    let total = Number(parts[0]) * 60 + Number(parts[1]) + minutesDelta;
-    if (total < 0) total = 0;
-    if (total > 1439) total = 1439;
-    const h = String(Math.floor(total / 60)).padStart(2, '0');
-    const m = String(total % 60).padStart(2, '0');
-    return h + ':' + m;
-  }
-
   let links = null;
   if (groupRow) {
-    const departureTime = groupRow.departure.slice(11);
-    const timeWindow = padTime(departureTime, -30) + '-' + padTime(departureTime, 30);
-    const supplierParam = groupRow.supplierFilterId ? '&suppliers=' + encodeURIComponent(groupRow.supplierFilterId) : '';
-    const filterParams = supplierParam + '&departureTime=' + timeWindow;
+    const { timeWindow, filterParams } = buildFilterParams(groupRow);
     links = (
       <div className="explain">
         <span className="lbl">links</span>
@@ -148,7 +114,7 @@ export default function JourneyCompare({ result, detailGroup, onClose, bawResult
               <tr><th></th><th className="baw">BAW</th><th className="tc">TC</th></tr>
             </thead>
             <tbody>
-              <tr><td>Price</td><td>{bawRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td><td>{tcRows.map((r) => (r.price != null ? '$' + r.price.toFixed(2) : '—')).join(' · ') || '—'}</td></tr>
+              <tr><td>Price</td><td>{priceText(bawRows)}</td><td>{priceText(tcRows)}</td></tr>
               <tr><td>Ranking</td><td>{scoreText(bawRows)}</td><td>{scoreText(tcRows)}</td></tr>
               <tr><td>Stations</td><td>{stationsText(bawRows)}</td><td>{stationsText(tcRows)}</td></tr>
               <tr><td>Class</td><td>{classText(bawRows)}</td><td>{classText(tcRows)}</td></tr>
@@ -162,13 +128,7 @@ export default function JourneyCompare({ result, detailGroup, onClose, bawResult
           <span className="lbl">data</span>
           <button
             className="secondary"
-            onClick={() => {
-              const raw = JSON.stringify({ baw: bawRows, tc: tcRows }, null, 2);
-              navigator.clipboard.writeText(raw).then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1500);
-              });
-            }}
+            onClick={() => copy(JSON.stringify({ baw: bawRows, tc: tcRows }, null, 2))}
           >
             {copied ? 'Copied ✓' : 'Copy raw data 📋'}
           </button>

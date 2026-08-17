@@ -3,13 +3,17 @@
 import { useEffect, useState } from 'react';
 import { PRESETS } from './presets';
 import { prepareComparison } from './prepare';
-import RootCompare from './rootCompare';
-import JourneyCompare from './journeyCompare';
+import ViewRoot from './views/ViewRoot';
+import ViewJourneyCompare from './views/ViewJourneyCompare';
 
 export default function Page() {
   const [fromSlug, setFromSlug] = useState('barranquilla');
   const [toSlug, setToSlug] = useState('riohacha');
-  const [date, setDate] = useState('2026-08-16');
+  const [date, setDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    return d.toISOString().slice(0, 10);
+  });
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -239,7 +243,7 @@ export default function Page() {
       )}
 
       {result && (
-        <RootCompare
+        <ViewRoot
           result={result}
           sortBy={sortBy}
           setSortBy={setSortBy}
@@ -250,7 +254,7 @@ export default function Page() {
       )}
 
       {result && detailGroup != null && (
-        <JourneyCompare
+        <ViewJourneyCompare
           result={result}
           detailGroup={detailGroup}
           onClose={() => setDetailGroup(null)}
