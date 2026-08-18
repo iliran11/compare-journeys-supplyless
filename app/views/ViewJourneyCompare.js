@@ -4,13 +4,11 @@ import { useState } from 'react';
 import useEscapeKey from '../logic/useEscapeKey';
 import ViewJourneyCompareTabCompare from './ViewJourneyCompareTabCompare';
 import ViewJourneyCompareTabDiff from './ViewJourneyCompareTabDiff';
-import ViewJourneyCompareTabLinks from './ViewJourneyCompareTabLinks';
 import ViewJourneyCompareTabMisc from './ViewJourneyCompareTabMisc';
 
 const TABS = [
   { key: 'compare', label: 'Compare' },
   { key: 'diff', label: 'Diff' },
-  { key: 'links', label: 'Links' },
   { key: 'misc', label: 'Misc' },
 ];
 
@@ -46,9 +44,15 @@ export default function ViewJourneyCompare({ result, detailGroup, onClose, bawRe
             </button>
           ))}
         </div>
-        {activeTab === 'compare' && <ViewJourneyCompareTabCompare bawRows={bawRows} tcRows={tcRows} />}
+        {activeTab === 'compare' && (
+          <ViewJourneyCompareTabCompare
+            bawRows={bawRows}
+            tcRows={tcRows}
+            groupRow={groupRow}
+            bawResultsUrl={bawResultsUrl}
+          />
+        )}
         {activeTab === 'diff' && <ViewJourneyCompareTabDiff bawRows={bawRows} tcRows={tcRows} />}
-        {activeTab === 'links' && <ViewJourneyCompareTabLinks groupRow={groupRow} bawResultsUrl={bawResultsUrl} />}
         {activeTab === 'misc' && <ViewJourneyCompareTabMisc bawRows={bawRows} tcRows={tcRows} />}
       </div>
     </div>
