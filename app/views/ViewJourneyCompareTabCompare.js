@@ -1,20 +1,18 @@
 'use client';
 
-import { useState } from 'react';
 import buildFilterParams from '../logic/buildFilterParams';
 import ViewJourneyDetailCard from './ViewJourneyDetailCard';
 
 export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow, bawResultsUrl }) {
   const filterParams = groupRow ? buildFilterParams(groupRow).filterParams : '';
-  const [hoveredSection, setHoveredSection] = useState(null);
 
   return (
     <>
       <div className="colheads"><span className="baw">BAW</span><span className="tc">TC</span></div>
       <div className="cols modal-cols">
-        <div className="col col-baw">
+        <div className="col">
           {bawRows.map((r, i) => (
-            <ViewJourneyDetailCard key={i} row={r} side="baw" hoveredSection={hoveredSection} onHoverSection={setHoveredSection} />
+            <ViewJourneyDetailCard key={i} row={r} side="baw" />
           ))}
           {groupRow && (
             <a className="secondary links-cta" href={bawResultsUrl('PIN-BAW') + filterParams} target="_blank" rel="noreferrer">
@@ -22,9 +20,9 @@ export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow
             </a>
           )}
         </div>
-        <div className="col col-tc">
+        <div className="col">
           {tcRows.map((r, i) => (
-            <ViewJourneyDetailCard key={i} row={r} side="tc" hoveredSection={hoveredSection} onHoverSection={setHoveredSection} />
+            <ViewJourneyDetailCard key={i} row={r} side="tc" />
           ))}
           {groupRow && (
             <a className="secondary links-cta" href={bawResultsUrl('PIN-TC') + filterParams} target="_blank" rel="noreferrer">
