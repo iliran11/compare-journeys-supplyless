@@ -12,7 +12,7 @@ const TABS = [
   { key: 'misc', label: 'Misc' },
 ];
 
-export default function ViewJourneyCompare({ result, detailGroup, onClose, bawResultsUrl }) {
+export default function ViewJourneyCompare({ result, detailGroup, onClose, bawResultsUrl, route, date }) {
   const [activeTab, setActiveTab] = useState('compare');
   useEscapeKey(onClose);
 
@@ -50,6 +50,8 @@ export default function ViewJourneyCompare({ result, detailGroup, onClose, bawRe
             tcRows={tcRows}
             groupRow={groupRow}
             bawResultsUrl={bawResultsUrl}
+            route={route}
+            date={date}
           />
         )}
         {activeTab === 'diff' && <ViewJourneyCompareTabDiff bawRows={bawRows} tcRows={tcRows} />}

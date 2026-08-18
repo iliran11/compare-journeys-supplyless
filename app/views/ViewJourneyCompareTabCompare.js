@@ -1,10 +1,12 @@
 'use client';
 
 import buildFilterParams from '../logic/buildFilterParams';
+import buildDataProviderUrl from '../logic/buildDataProviderUrl';
 import ViewJourneyDetailCard from './ViewJourneyDetailCard';
 
-export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow, bawResultsUrl }) {
+export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow, bawResultsUrl, route, date }) {
   const filterParams = groupRow ? buildFilterParams(groupRow).filterParams : '';
+  const dataProviderUrl = buildDataProviderUrl(route, date);
 
   return (
     <>
@@ -30,6 +32,15 @@ export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow
             </a>
           )}
         </div>
+      </div>
+      <div className="divider">Links</div>
+      <div className="links-section">
+        {dataProviderUrl && (
+          <a className="secondary links-cta" href={dataProviderUrl} target="_blank" rel="noreferrer">
+            Open PinBus search ↗
+          </a>
+        )}
+        {!dataProviderUrl && <span className="empty">No data provider link for this route.</span>}
       </div>
     </>
   );

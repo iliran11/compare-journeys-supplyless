@@ -557,6 +557,10 @@ input[type="radio"],
   text-decoration: none;
   font-weight: 600;
 }
+.links-section {
+  display: flex;
+  gap: 16px;
+}
 .card.detail {
   cursor: default;
   padding: 16px 20px 18px;

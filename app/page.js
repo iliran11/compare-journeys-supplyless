@@ -264,6 +264,8 @@ export default function Page() {
           detailGroup={detailGroup}
           onClose={() => setDetailGroup(null)}
           bawResultsUrl={bawResultsUrl}
+          route={currentRoute()}
+          date={date}
         />
       )}
     </main>
