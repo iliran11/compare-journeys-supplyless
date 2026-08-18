@@ -521,6 +521,14 @@ input[type="radio"],
   justify-content: space-between;
   margin-bottom: 14px;
 }
+.modal-head .config-title {
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  margin-bottom: 0;
+}
 .modal .colheads,
 .modal .cols {
   max-width: none;
@@ -558,18 +566,61 @@ input[type="radio"],
 }
 .card.detail {
   cursor: default;
+  padding: 16px 20px 18px;
+}
+.detail-title {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+}
+.detail-title.baw {
+  color: var(--baw);
+}
+.detail-title.tc {
+  color: var(--tc);
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.detail-row-top {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.detail-row-top .op {
+  font-weight: 700;
+}
+.detail-row-top .price .val {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 15px;
 }
 .detail-sections {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 10px;
+  gap: 6px 16px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.detail-sections:last-of-type,
+.detail-sections.no-border {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 .detail-section {
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 8px 10px;
+  padding: 0;
   font-size: 13px;
+}
+.detail-section-align {
+  visibility: visible;
 }
 .detail-section .section-title {
   font-size: 10px;
@@ -579,8 +630,17 @@ input[type="radio"],
   color: var(--muted);
   margin-bottom: 4px;
 }
+.detail-admin {
+  padding-top: 4px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
 .pictures-section {
-  margin-top: 10px;
+  margin-top: 0;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 .pictures {
   display: flex;
