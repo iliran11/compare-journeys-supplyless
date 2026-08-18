@@ -1,3 +1,5 @@
+export const BASE_URL = 'https://www.bookaway.com';
+
 export const PRESETS = [
   {
     name: 'Pinbus Colombia',

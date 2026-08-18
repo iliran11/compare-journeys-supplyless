@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PRESETS } from './presets';
+import { PRESETS, BASE_URL } from './config';
 import { prepareComparison } from './prepare';
 import ViewRoot from './views/ViewRoot';
 import ViewJourneyCompare from './views/ViewJourneyCompare';
@@ -57,7 +57,7 @@ export default function Page() {
   function bawResultsUrl(debugValue) {
     const route = currentRoute();
     const country = route && route.countrySlug ? route.countrySlug : 'colombia';
-    return 'https://www.bookaway.com/s/' + country + '/' + fromSlug + '-to-' + toSlug + '?departureDate=' + date.trim() + '&debug=' + debugValue;
+    return BASE_URL + '/s/' + country + '/' + fromSlug + '-to-' + toSlug + '?departureDate=' + date.trim() + '&debug=' + debugValue;
   }
 
   useEffect(() => {
