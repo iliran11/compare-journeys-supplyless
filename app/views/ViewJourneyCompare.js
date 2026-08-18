@@ -1,85 +1,26 @@
 'use client';
 
+import { useState } from 'react';
 import useEscapeKey from '../logic/useEscapeKey';
-import useCopyToClipboard from '../logic/useCopyToClipboard';
-import buildFilterParams from '../logic/buildFilterParams';
-import { scoreText, classText, picturesText, stationsText, vehicleTypeText, priceText } from '../logic/diffTexts';
+import ViewJourneyCompareTabCompare from './ViewJourneyCompareTabCompare';
+import ViewJourneyCompareTabDiff from './ViewJourneyCompareTabDiff';
+import ViewJourneyCompareTabLinks from './ViewJourneyCompareTabLinks';
+import ViewJourneyCompareTabMisc from './ViewJourneyCompareTabMisc';
 
-function DetailCard({ row, side }) {
-  return (
-    <div className={'card detail ' + side}>
-      <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
-      <span className="lbl">operator</span><span className="op">{row.company}</span>
-      <div className="detail-sections">
-        <div className="detail-section">
-          <div className="section-title">Departure</div>
-          <div><span className="lbl">time</span><span className="time">{row.departure.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.fromStation || '—'}</span></div>
-        </div>
-        <div className="detail-section">
-          <div className="section-title">Arrival</div>
-          <div><span className="lbl">time</span><span className="time">{row.arrival.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.toStation || '—'}</span></div>
-        </div>
-      </div>
-      <div className="detail-section">
-        <div className="section-title">Ranking</div>
-        <div><span className="lbl">score</span><span className="val">{typeof row.score === 'number' && row.score > 0 ? row.score : '—'}</span></div>
-        <div><span className="lbl">rank by score</span><span className="val">{row.scoreRank != null ? '#' + row.scoreRank : '—'}</span></div>
-      </div>
-      <div className="detail-grid">
-        <div><span className="lbl">vehicle class</span><span className="val">{row.lineClass || '—'}</span></div>
-        <div><span className="lbl">vehicle type</span><span className="val">{row.vehicleType || '—'}</span></div>
-        {row.tripId && (
-          <div>
-            <span className="lbl">admin</span>
-            <a
-              className="triplink"
-              href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {row.tripId} ↗
-            </a>
-          </div>
-        )}
-      </div>
-      {row.pictures && row.pictures.length > 0 && (
-        <div className="detail-section pictures-section">
-          <div className="section-title">Pictures</div>
-          <div className="pictures">
-            {row.pictures.map((url, i) => (
-              <a key={i} href={url} target="_blank" rel="noreferrer">
-                <img src={url} alt={row.company + ' picture ' + (i + 1)} loading="lazy" />
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+const TABS = [
+  { key: 'compare', label: 'Compare' },
+  { key: 'diff', label: 'Diff' },
+  { key: 'links', label: 'Links' },
+  { key: 'misc', label: 'Misc' },
+];
 
 export default function ViewJourneyCompare({ result, detailGroup, onClose, bawResultsUrl }) {
-  const { copied, copy } = useCopyToClipboard(1500);
+  const [activeTab, setActiveTab] = useState('compare');
   useEscapeKey(onClose);
 
   const bawRows = result.matchedBaw.filter((r) => r.groupId === detailGroup);
   const tcRows = result.matchedTc.filter((r) => r.groupId === detailGroup);
   const groupRow = bawRows[0] || tcRows[0];
-
-  let links = null;
-  if (groupRow) {
-    const { timeWindow, filterParams } = buildFilterParams(groupRow);
-    links = (
-      <div className="explain">
-        <span className="lbl">links</span>
-        <a href={bawResultsUrl('PIN-BAW') + filterParams} target="_blank" rel="noreferrer">BAW search results (operator + {timeWindow}) ↗</a>
-        {' · '}
-        <a href={bawResultsUrl('PIN-TC') + filterParams} target="_blank" rel="noreferrer">TC search results (operator + {timeWindow}) ↗</a>
-      </div>
-    );
-  }
 
   return (
     <div className="overlay" onClick={onClose}>
@@ -94,45 +35,21 @@ export default function ViewJourneyCompare({ result, detailGroup, onClose, bawRe
             <b>{groupRow.company}</b> · departure <b>{groupRow.departure.slice(11)}</b> · arrival <b>{groupRow.arrival.slice(11)}</b>
           </div>
         )}
-        <div className="colheads"><span className="baw">BAW</span><span className="tc">TC</span></div>
-        <div className="cols modal-cols">
-          <div className="col">
-            {bawRows.map((r, i) => (
-              <DetailCard key={i} row={r} side="baw" />
-            ))}
-          </div>
-          <div className="col">
-            {tcRows.map((r, i) => (
-              <DetailCard key={i} row={r} side="tc" />
-            ))}
-          </div>
+        <div className="tabbar">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              className={'tab' + (activeTab === tab.key ? ' active' : '')}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
-        <div className="explain diff">
-          <span className="lbl">diff</span>
-          <table className="diff-table">
-            <thead>
-              <tr><th></th><th className="baw">BAW</th><th className="tc">TC</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Price</td><td>{priceText(bawRows)}</td><td>{priceText(tcRows)}</td></tr>
-              <tr><td>Ranking</td><td>{scoreText(bawRows)}</td><td>{scoreText(tcRows)}</td></tr>
-              <tr><td>Stations</td><td>{stationsText(bawRows)}</td><td>{stationsText(tcRows)}</td></tr>
-              <tr><td>Class</td><td>{classText(bawRows)}</td><td>{classText(tcRows)}</td></tr>
-              <tr><td>Vehicle type</td><td>{vehicleTypeText(bawRows)}</td><td>{vehicleTypeText(tcRows)}</td></tr>
-              <tr><td>Pictures</td><td>{picturesText(bawRows)}</td><td>{picturesText(tcRows)}</td></tr>
-            </tbody>
-          </table>
-        </div>
-        {links}
-        <div className="explain data-section">
-          <span className="lbl">data</span>
-          <button
-            className="secondary"
-            onClick={() => copy(JSON.stringify({ baw: bawRows.map((r) => r.raw), tc: tcRows.map((r) => r.raw) }, null, 2))}
-          >
-            {copied ? 'Copied ✓' : 'Copy raw data 📋'}
-          </button>
-        </div>
+        {activeTab === 'compare' && <ViewJourneyCompareTabCompare bawRows={bawRows} tcRows={tcRows} />}
+        {activeTab === 'diff' && <ViewJourneyCompareTabDiff bawRows={bawRows} tcRows={tcRows} />}
+        {activeTab === 'links' && <ViewJourneyCompareTabLinks groupRow={groupRow} bawResultsUrl={bawResultsUrl} />}
+        {activeTab === 'misc' && <ViewJourneyCompareTabMisc bawRows={bawRows} tcRows={tcRows} />}
       </div>
     </div>
   );

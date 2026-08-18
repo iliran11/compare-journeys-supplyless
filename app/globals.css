@@ -8,6 +8,7 @@
   --baw: #b3541e;
   --match: #4d7c4a;
   --miss-bg: #f3ede4;
+  --accent: #6a4fb3;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -20,6 +21,7 @@
     --baw: #e0854a;
     --match: #8cbf88;
     --miss-bg: #2e2c25;
+    --accent: #a894e0;
   }
 }
 * {
@@ -285,23 +287,29 @@ button.secondary {
 .tabbar {
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid var(--line);
+  background: var(--line);
+  border-radius: 8px;
+  padding: 5px;
   margin-bottom: 16px;
 }
 .tab {
-  padding: 10px 18px;
+  padding: 9px 20px;
   font-size: 14px;
   font-weight: 600;
   color: var(--muted);
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 6px;
   cursor: pointer;
-  margin-bottom: -1px;
+  transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.tab:hover {
+  color: var(--ink);
 }
 .tab.active {
-  color: var(--ink);
-  border-bottom-color: var(--tc);
+  color: var(--accent);
+  background: var(--panel);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 .sortbar {
   display: flex;
@@ -524,6 +532,29 @@ input[type="radio"],
 }
 .modal-cols .col {
   width: 48%;
+}
+.links-grid {
+  display: flex;
+  gap: 24px;
+  max-width: 900px;
+}
+.links-card {
+  flex: 1;
+  background: var(--panel);
+  border-radius: 6px;
+}
+.links-card-desc {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 6px 0 14px;
+}
+.links-card-desc b {
+  color: var(--ink);
+}
+.links-cta {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
 }
 .card.detail {
   cursor: default;
