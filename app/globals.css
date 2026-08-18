@@ -390,15 +390,18 @@ input[type="radio"],
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--line);
   border-radius: 6px;
   padding: 8px 12px;
 }
-.card.tc {
-  border-left-color: var(--tc);
+.col-baw {
+  background: color-mix(in srgb, var(--baw) 6%, transparent);
+  border-radius: 8px;
+  padding: 10px;
 }
-.card.baw {
-  border-left-color: var(--baw);
+.col-tc {
+  background: color-mix(in srgb, var(--tc) 6%, transparent);
+  border-radius: 8px;
+  padding: 10px;
 }
 .card.unmatched {
   background: var(--miss-bg);
@@ -567,6 +570,13 @@ input[type="radio"],
 .card.detail {
   cursor: default;
   padding: 16px 20px 18px;
+}
+.hoverable-section {
+  transition: opacity 0.12s ease, background-color 0.12s ease;
+  border-radius: 6px;
+}
+.hoverable-section.hl {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 .detail-title {
   text-align: center;
