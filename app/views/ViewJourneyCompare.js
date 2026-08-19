@@ -24,15 +24,13 @@ export default function ViewJourneyCompare({ result, detailGroup, onClose, bawRe
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <div className="config-title">Matching group — side by side</div>
+          <div className="config-title">
+            {route ? route.fromSlug : ''} <b>{groupRow ? groupRow.departure.slice(11) : ''}</b>
+            {' → '}
+            {route ? route.toSlug : ''} <b>{groupRow ? groupRow.arrival.slice(11) : ''}</b>
+          </div>
           <button className="secondary" onClick={onClose}>Close ✕</button>
         </div>
-        {groupRow && (
-          <div className="explain">
-            <span className="lbl">matching key</span>
-            <b>{groupRow.company}</b> · departure <b>{groupRow.departure.slice(11)}</b> · arrival <b>{groupRow.arrival.slice(11)}</b>
-          </div>
-        )}
         <div className="tabbar">
           {TABS.map((tab) => (
             <button

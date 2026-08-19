@@ -6,6 +6,7 @@ import { prepareComparison } from './prepare';
 import ViewRoot from './views/ViewRoot';
 import ViewJourneyCompare from './views/ViewJourneyCompare';
 import ViewTabBar from './views/ViewTabBar';
+import ViewVehicleClassCompare from './views/ViewVehicleClassCompare';
 
 export default function Page() {
   const [fromSlug, setFromSlug] = useState('barranquilla');
@@ -254,8 +255,8 @@ export default function Page() {
         />
       )}
 
-      {result && activeTab === 'scoring' && (
-        <div className="explain">Scoring — coming soon.</div>
+      {result && activeTab === 'vehicleClass' && (
+        <ViewVehicleClassCompare result={result} />
       )}
 
       {result && detailGroup != null && (

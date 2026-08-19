@@ -10,10 +10,10 @@ export default function ViewTabBar({ activeTab, setActiveTab }) {
         Compare results
       </button>
       <button
-        className={'tab' + (activeTab === 'scoring' ? ' active' : '')}
-        onClick={() => setActiveTab('scoring')}
+        className={'tab' + (activeTab === 'vehicleClass' ? ' active' : '')}
+        onClick={() => setActiveTab('vehicleClass')}
       >
-        Scoring
+        Vehicle class
       </button>
     </div>
   );

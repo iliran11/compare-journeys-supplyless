@@ -2,11 +2,13 @@
 
 import buildFilterParams from '../logic/buildFilterParams';
 import buildDataProviderUrl from '../logic/buildDataProviderUrl';
+import buildTwelveGoUrl from '../logic/buildTwelveGoUrl';
 import ViewJourneyDetailCard from './ViewJourneyDetailCard';
 
 export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow, bawResultsUrl, route, date }) {
   const filterParams = groupRow ? buildFilterParams(groupRow).filterParams : '';
   const dataProviderUrl = buildDataProviderUrl(route, date);
+  const twelveGoUrl = buildTwelveGoUrl(route);
 
   return (
     <>
@@ -41,6 +43,12 @@ export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow
           </a>
         )}
         {!dataProviderUrl && <span className="empty">No data provider link for this route.</span>}
+        {twelveGoUrl && (
+          <a className="secondary links-cta" href={twelveGoUrl} target="_blank" rel="noreferrer">
+            Open 12GO search ↗
+          </a>
+        )}
+        {!twelveGoUrl && <span className="empty">No 12GO link for this route.</span>}
       </div>
     </>
   );
