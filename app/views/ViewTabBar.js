@@ -15,6 +15,12 @@ export default function ViewTabBar({ activeTab, setActiveTab }) {
       >
         Vehicle class
       </button>
+      <button
+        className={'tab' + (activeTab === 'price' ? ' active' : '')}
+        onClick={() => setActiveTab('price')}
+      >
+        Price
+      </button>
     </div>
   );
 }

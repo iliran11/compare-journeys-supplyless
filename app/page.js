@@ -7,6 +7,7 @@ import ViewRoot from './views/ViewRoot';
 import ViewJourneyCompare from './views/ViewJourneyCompare';
 import ViewTabBar from './views/ViewTabBar';
 import ViewVehicleClassCompare from './views/ViewVehicleClassCompare';
+import ViewPriceCompare from './views/ViewPriceCompare';
 
 export default function Page() {
   const [fromSlug, setFromSlug] = useState('barranquilla');
@@ -257,6 +258,10 @@ export default function Page() {
 
       {result && activeTab === 'vehicleClass' && (
         <ViewVehicleClassCompare result={result} />
+      )}
+
+      {result && activeTab === 'price' && (
+        <ViewPriceCompare result={result} />
       )}
 
       {result && detailGroup != null && (
