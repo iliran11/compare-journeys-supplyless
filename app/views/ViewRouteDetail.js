@@ -3,6 +3,12 @@
 import { useState } from 'react';
 import buildBawResultsUrl from '../logic/buildBawResultsUrl';
 import ViewRoot from './ViewRoot';
+import ViewTransportMatchTab from './ViewTransportMatchTab';
+
+const TABS = [
+  { key: 'board', label: 'Board' },
+  { key: 'by-transport', label: 'By transport' },
+];
 
 export default function ViewRouteDetail({ route, date, config, onBack, onOpenJourney }) {
   const [showConfig, setShowConfig] = useState(false);
@@ -10,6 +16,7 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
   const [promptExpanded, setPromptExpanded] = useState(false);
   const [sortBy, setSortBy] = useState('departure');
   const [activePair, setActivePair] = useState(null);
+  const [activeTab, setActiveTab] = useState('board');
 
   const result = route.result;
 
@@ -128,14 +135,29 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
         </div>
       )}
 
-      <ViewRoot
-        result={result}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        activePair={activePair}
-        setActivePair={setActivePair}
-        onOpenJourney={onOpenJourney}
-      />
+      <div className="tabbar">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            className={'tab' + (activeTab === tab.key ? ' active' : '')}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'board' && (
+        <ViewRoot
+          result={result}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          activePair={activePair}
+          setActivePair={setActivePair}
+          onOpenJourney={onOpenJourney}
+        />
+      )}
+      {activeTab === 'by-transport' && <ViewTransportMatchTab result={result} />}
     </div>
   );
 }
