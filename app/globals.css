@@ -802,6 +802,7 @@ input[type="radio"],
 }
 .formula {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 14px;
@@ -839,6 +840,15 @@ input[type="radio"],
   font-size: 22px;
   font-weight: 800;
   color: var(--ink);
+}
+.formula-note {
+  flex-basis: 100%;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: normal;
+  text-align: center;
+  color: var(--accent);
+  margin-top: 4px;
 }
 .dash-tile-value {
   font-size: 22px;

@@ -219,6 +219,13 @@ export const PRESETS = [
         twelveGoLink: null,
       }, // #28
       {
+        fromSlug: "medellin",
+        toSlug: "jardin",
+        countrySlug: "colombia",
+        dataProviderLink: null,
+        twelveGoLink: null,
+      }, // #29
+      {
         fromSlug: "cartagena",
         toSlug: "bogota",
         countrySlug: "colombia",

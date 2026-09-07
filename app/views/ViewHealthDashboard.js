@@ -96,13 +96,13 @@ export default function ViewHealthDashboard({ routes }) {
       />
       <GaugeTile
         label="Class match"
-        formula={<ViewFormula top="classMatch" bottom="classTotal" suffix="× 100" />}
+        formula={<ViewFormula top="classMatch" bottom="classTotal" suffix="× 100" note="Calculated per matched BAW journeys." />}
         percent={m.classMatchPercent}
         sub={m.classTotal ? m.classMatchCount + '/' + m.classTotal : null}
       />
       <Tile
         label="Avg rank diff"
-        formula={<ViewFormula plain="For each matched BAW journey, its rank within BAW's matched set vs. its pair's rank within TC's matched set — averaged across all matched journeys. Lower is better." />}
+        formula={<ViewFormula plain="For each matched BAW journey, its rank within BAW's matched set vs. its pair's rank within TC's matched set — averaged across all matched journeys. Lower is better." note="Calculated per matched BAW journeys." />}
         value={m.avgRankDiff == null ? '—' : m.avgRankDiff.toFixed(1)}
         sub={m.rankDiffComparedCount ? m.rankDiffComparedCount + ' journeys' : null}
       />

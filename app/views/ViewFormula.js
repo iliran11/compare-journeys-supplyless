@@ -1,8 +1,13 @@
 'use client';
 
-export default function ViewFormula({ top, bottom, suffix, plain }) {
+export default function ViewFormula({ top, bottom, suffix, plain, note }) {
   if (plain) {
-    return <div className="formula formula-plain">{plain}</div>;
+    return (
+      <div className="formula formula-plain">
+        {plain}
+        {note && <div className="formula-note"><strong>{note}</strong></div>}
+      </div>
+    );
   }
   return (
     <div className="formula">
@@ -12,6 +17,7 @@ export default function ViewFormula({ top, bottom, suffix, plain }) {
         <span className="formula-bottom">{bottom}</span>
       </div>
       {suffix && <span className="formula-suffix">{suffix}</span>}
+      {note && <div className="formula-note"><strong>{note}</strong></div>}
     </div>
   );
 }

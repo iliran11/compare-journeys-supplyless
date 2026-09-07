@@ -30,7 +30,7 @@ function StatusBadge({ status }) {
   return <span className={'route-status route-status-' + status}>{label}</span>;
 }
 
-function RouteRow({ route, onSearchRoute, onOpenRoute, searchingAll }) {
+function RouteRow({ route, seq, onSearchRoute, onOpenRoute, searchingAll }) {
   const health = route.health;
   const clickable = route.status === 'done';
 
@@ -39,6 +39,7 @@ function RouteRow({ route, onSearchRoute, onOpenRoute, searchingAll }) {
       className={'route-row' + (clickable ? ' route-row-clickable' : '')}
       onClick={clickable ? () => onOpenRoute(route.id) : undefined}
     >
+      <td>{seq}</td>
       <td>{route.fromSlug} → {route.toSlug}</td>
       <td><StatusBadge status={route.status} /></td>
       <td>
@@ -87,12 +88,20 @@ export default function ViewRouteList({ routes, date, setDate, searchingAll, sea
     groups.get(route.presetName).push(route);
   }
 
+  let rowSeq = 0;
+
   return (
     <div>
       <div className="controls">
         <div>
           <label htmlFor="date">Date</label>
           <input id="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        </div>
+        <div>
+          <label htmlFor="integration">Integration</label>
+          <select id="integration" value="pinbus-colombia" disabled>
+            <option value="pinbus-colombia">Pinbus Colombia</option>
+          </select>
         </div>
         <button onClick={onSearchAll} disabled={searchingAll}>
           {searchingAll ? 'Searching all… ' + searchAllProgress.done + '/' + searchAllProgress.total : 'Search all'}
@@ -114,6 +123,7 @@ export default function ViewRouteList({ routes, date, setDate, searchingAll, sea
             <table className="route-table">
               <thead>
                 <tr>
+                  <th>#</th>
                   {COLUMNS.map((column) => (
                     <SortableHeader key={column.key} column={column} sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                   ))}
@@ -121,15 +131,19 @@ export default function ViewRouteList({ routes, date, setDate, searchingAll, sea
                 </tr>
               </thead>
               <tbody>
-                {sortedRoutes.map((route) => (
-                  <RouteRow
-                    key={route.id}
-                    route={route}
-                    searchingAll={searchingAll}
-                    onSearchRoute={onSearchRoute}
-                    onOpenRoute={onOpenRoute}
-                  />
-                ))}
+                {sortedRoutes.map((route) => {
+                  rowSeq += 1;
+                  return (
+                    <RouteRow
+                      key={route.id}
+                      route={route}
+                      seq={rowSeq}
+                      searchingAll={searchingAll}
+                      onSearchRoute={onSearchRoute}
+                      onOpenRoute={onOpenRoute}
+                    />
+                  );
+                })}
               </tbody>
             </table>
           </div>
