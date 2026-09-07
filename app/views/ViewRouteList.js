@@ -11,7 +11,8 @@ const COLUMNS = [
   { key: 'match', label: 'Journey match' },
   { key: 'duplicates', label: 'Duplicates' },
   { key: 'avgPictures', label: 'Avg pictures/journey' },
-  { key: 'classMismatch', label: 'Class mismatch' }
+  { key: 'classMatch', label: 'Class match' },
+  { key: 'avgRankDiff', label: 'Avg rank diff' }
 ];
 
 function SortableHeader({ column, sortKey, sortDir, onSort }) {
@@ -46,7 +47,10 @@ function RouteRow({ route, onSearchRoute, onOpenRoute, searchingAll }) {
       <td>{health ? health.duplicateCount + '/' + health.bawTotal + ' · ' + health.duplicatePercent + '%' : '—'}</td>
       <td>{health && health.bawAvgPictures != null ? health.bawAvgPictures.toFixed(1) : '—'}</td>
       <td>
-        {health ? health.classMismatchCount + '/' + health.classTotal + ' · ' + health.classMatchPercent + '%' : '—'}
+        {health ? health.classMatchCount + '/' + health.classTotal + ' · ' + health.classMatchPercent + '%' : '—'}
+      </td>
+      <td>
+        {health && health.avgRankDiff != null ? health.avgRankDiff.toFixed(1) + ' (' + health.rankDiffComparedCount + ')' : '—'}
       </td>
       <td onClick={(e) => e.stopPropagation()}>
         {route.status === 'loading' && <span className="route-inline-hint">…</span>}

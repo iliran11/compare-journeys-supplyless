@@ -27,7 +27,7 @@ export default function ViewJourneyDetailCard({ row, side }) {
         </div>
         <div className="detail-section detail-section-align">
           <div className="section-title">&nbsp;</div>
-          <div><span className="lbl">rank by score</span><span className="val">{row.scoreRank != null ? '#' + row.scoreRank : '—'}</span></div>
+          <div><span className="lbl">rank by score</span><span className="val">{row.matchedScoreRank != null ? '#' + row.matchedScoreRank : '—'}</span></div>
         </div>
       </div>
       <div className="detail-sections">

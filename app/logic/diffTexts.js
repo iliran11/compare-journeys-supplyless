@@ -1,7 +1,7 @@
 export function scoreText(rows) {
   return rows.map((r) => {
     const score = typeof r.score === 'number' && r.score > 0 ? Math.round(r.score) : '—';
-    const rank = r.scoreRank != null ? '#' + r.scoreRank : '—';
+    const rank = r.matchedScoreRank != null ? '#' + r.matchedScoreRank : '—';
     return score + ' (rank ' + rank + ')';
   }).join(' · ') || '—';
 }

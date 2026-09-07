@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import buildBawResultsUrl from '../logic/buildBawResultsUrl';
+import useSortByPreference from '../logic/useSortByPreference';
 import ViewRoot from './ViewRoot';
 import ViewTransportMatchTab from './ViewTransportMatchTab';
 
@@ -14,7 +15,7 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
   const [showConfig, setShowConfig] = useState(false);
   const [showCommon, setShowCommon] = useState(false);
   const [promptExpanded, setPromptExpanded] = useState(false);
-  const [sortBy, setSortBy] = useState('departure');
+  const [sortBy, setSortBy] = useSortByPreference('departure');
   const [activePair, setActivePair] = useState(null);
   const [activeTab, setActiveTab] = useState('board');
 

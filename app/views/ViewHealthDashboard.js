@@ -90,7 +90,7 @@ export default function ViewHealthDashboard({ routes }) {
         label="Avg price"
         formula={<ViewFormula top="bawAvgPrice" bottom="tcAvgPrice" suffix="× 100" />}
         percent={m.priceClosenessPercent}
-        color={gaugeColorForCloseness(m.priceClosenessPercent)}
+        color={gaugeColorForCloseness(m.priceClosenessPercent, { greenThreshold: 15 })}
         bawValue={formatPrice(m.bawAvgPrice)}
         tcValue={formatPrice(m.tcAvgPrice)}
       />
@@ -100,11 +100,11 @@ export default function ViewHealthDashboard({ routes }) {
         percent={m.classMatchPercent}
         sub={m.classTotal ? m.classMatchCount + '/' + m.classTotal : null}
       />
-      <GaugeTile
-        label="Top-10 retention"
-        formula={<ViewFormula plain="How much of Bookaway's top 10 retained the top 10 position" />}
-        percent={m.top10RetainedPercent}
-        sub={m.top10Total ? m.top10RetainedCount + '/' + m.top10Total : null}
+      <Tile
+        label="Avg rank diff"
+        formula={<ViewFormula plain="For each matched BAW journey, its rank within BAW's matched set vs. its pair's rank within TC's matched set — averaged across all matched journeys. Lower is better." />}
+        value={m.avgRankDiff == null ? '—' : m.avgRankDiff.toFixed(1)}
+        sub={m.rankDiffComparedCount ? m.rankDiffComparedCount + ' journeys' : null}
       />
     </div>
   );

@@ -2,8 +2,8 @@ export default function sortRows(rows, sortBy) {
   const copy = rows.slice();
   if (sortBy === 'score') {
     copy.sort(function (a, b) {
-      const rankA = a.scoreRank != null ? a.scoreRank : Infinity;
-      const rankB = b.scoreRank != null ? b.scoreRank : Infinity;
+      const rankA = a.matchedScoreRank != null ? a.matchedScoreRank : Infinity;
+      const rankB = b.matchedScoreRank != null ? b.matchedScoreRank : Infinity;
       if (rankA !== rankB) return rankA - rankB;
       return a.departure < b.departure ? -1 : 1;
     });

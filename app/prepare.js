@@ -1,5 +1,15 @@
 import kebabCase from 'lodash/kebabCase';
 
+function assignMatchedScoreRank(rows) {
+  const byScore = rows.slice().sort(function (a, b) {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.departure < b.departure ? -1 : 1;
+  });
+  for (let i = 0; i < byScore.length; i++) {
+    byScore[i].matchedScoreRank = i + 1;
+  }
+}
+
 export function prepareComparison(tcRaw, bawRaw) {
   const sides = [
     { label: 'tc', raw: tcRaw },
@@ -88,6 +98,9 @@ export function prepareComparison(tcRaw, bawRaw) {
       bawOnly.push(row);
     }
   }
+
+  assignMatchedScoreRank(matchedBaw);
+  assignMatchedScoreRank(matchedTc);
 
   return {
     matchedTc: matchedTc,

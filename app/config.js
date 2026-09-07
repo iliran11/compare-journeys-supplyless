@@ -2,6 +2,8 @@ export const BASE_URL = "https://www.bookaway.com";
 
 export const ROUTES_STORAGE_KEY = "compare-search-supplyless:routes";
 
+export const SORT_BY_STORAGE_KEY = "compare-search-supplyless:sortBy";
+
 export const DEPARTURE_TIME_WINDOW_PADDING_MINUTES = 5;
 
 export const SEARCH_CONFIG = {

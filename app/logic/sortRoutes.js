@@ -10,8 +10,10 @@ function sortValue(route, key) {
       return route.health ? route.health.duplicateCount : null;
     case 'avgPictures':
       return route.health ? route.health.bawAvgPictures : null;
-    case 'classMismatch':
-      return route.health ? route.health.classMismatchPercent : null;
+    case 'classMatch':
+      return route.health ? route.health.classMatchPercent : null;
+    case 'avgRankDiff':
+      return route.health ? route.health.avgRankDiff : null;
     default:
       return null;
   }

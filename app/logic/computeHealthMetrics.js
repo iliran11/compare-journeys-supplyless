@@ -1,5 +1,5 @@
 import computeVehicleClassComparison from './computeVehicleClassComparison';
-import computeScoreMatchComparison from './computeScoreMatchComparison';
+import computeRankDiffComparison from './computeRankDiffComparison';
 import matchPercent from './kpi-calculators/matchPercent';
 import duplicatePercent from './kpi-calculators/duplicatePercent';
 import bawAvgPictures from './kpi-calculators/bawAvgPictures';
@@ -7,7 +7,7 @@ import tcAvgPictures from './kpi-calculators/tcAvgPictures';
 import bawAvgPrice from './kpi-calculators/bawAvgPrice';
 import tcAvgPrice from './kpi-calculators/tcAvgPrice';
 import classMatchPercent from './kpi-calculators/classMatchPercent';
-import top10RetainedPercent from './kpi-calculators/top10RetainedPercent';
+import avgRankDiff from './kpi-calculators/avgRankDiff';
 import priceClosenessPercent from './kpi-calculators/priceClosenessPercent';
 import pictureClosenessPercent from './kpi-calculators/pictureClosenessPercent';
 
@@ -24,7 +24,7 @@ export default function computeHealthMetrics(result) {
   const tcPriceCount = result.matchedTc.map((r) => r.price).filter((p) => p != null).length;
 
   const vclass = computeVehicleClassComparison(result);
-  const scoreMatch = computeScoreMatchComparison(result);
+  const rankDiff = computeRankDiffComparison(result);
 
   return {
     bawTotal,
@@ -43,10 +43,11 @@ export default function computeHealthMetrics(result) {
     tcAvgPrice: tcAvgPrice(result),
     priceClosenessPercent: priceClosenessPercent(result),
     classMismatchCount: vclass.mismatchCount,
+    classMatchCount: vclass.matchCount,
     classMatchPercent: classMatchPercent(result),
     classTotal: vclass.total,
-    top10Total: scoreMatch.top10Total,
-    top10RetainedCount: scoreMatch.top10RetainedCount,
-    top10RetainedPercent: top10RetainedPercent(result)
+    rankDiffComparedCount: rankDiff.comparedCount,
+    rankDiffSum: rankDiff.rankDiffSum,
+    avgRankDiff: avgRankDiff(result)
   };
 }
