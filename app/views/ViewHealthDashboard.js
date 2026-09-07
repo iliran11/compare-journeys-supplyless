@@ -2,6 +2,7 @@
 
 import computeAggregateHealthMetrics from '../logic/computeAggregateHealthMetrics';
 import gaugeColorForPercent from '../logic/gaugeColorForPercent';
+import gaugeColorForCloseness from '../logic/gaugeColorForCloseness';
 import ViewFormula from './ViewFormula';
 import ViewGauge from './ViewGauge';
 import ViewInfoPopover from './ViewInfoPopover';
@@ -25,20 +26,21 @@ function Tile({ label, formula, value, sub }) {
   );
 }
 
-function GaugeTile({ label, formula, percent, sub, invert }) {
+function GaugeTile({ label, formula, percent, sub, invert, color }) {
   return (
     <div className="dash-tile dash-tile-gauge">
       <TileLabel label={label} formula={formula} />
-      <ViewGauge percent={percent} color={gaugeColorForPercent(percent, { invert })} />
+      <ViewGauge percent={percent} color={color || gaugeColorForPercent(percent, { invert })} />
       {sub && <div className="dash-tile-sub">{sub}</div>}
     </div>
   );
 }
 
-function CompareTile({ label, formula, bawValue, tcValue }) {
+function CompareGaugeTile({ label, formula, percent, color, bawValue, tcValue }) {
   return (
-    <div className="dash-tile">
+    <div className="dash-tile dash-tile-gauge dash-tile-wide">
       <TileLabel label={label} formula={formula} />
+      <ViewGauge percent={percent} color={color} />
       <div className="dash-tile-compare">
         <div className="dash-tile-compare-side">
           <div className="dash-tile-compare-tag baw">BAW</div>
@@ -76,15 +78,19 @@ export default function ViewHealthDashboard({ routes }) {
         sub={m.bawTotal ? m.duplicateCount + '/' + m.bawTotal : null}
         invert
       />
-      <CompareTile
+      <CompareGaugeTile
         label="Avg pictures"
-        formula={<ViewFormula top="Σ pictures" bottom="journeys" />}
+        formula={<ViewFormula top="tcAvgPictures" bottom="bawAvgPictures" suffix="× 100" />}
+        percent={m.pictureClosenessPercent}
+        color={gaugeColorForCloseness(m.pictureClosenessPercent)}
         bawValue={m.bawAvgPictures == null ? '—' : m.bawAvgPictures.toFixed(1)}
         tcValue={m.tcAvgPictures == null ? '—' : m.tcAvgPictures.toFixed(1)}
       />
-      <CompareTile
+      <CompareGaugeTile
         label="Avg price"
-        formula={<ViewFormula top="Σ price" bottom="journeys" />}
+        formula={<ViewFormula top="bawAvgPrice" bottom="tcAvgPrice" suffix="× 100" />}
+        percent={m.priceClosenessPercent}
+        color={gaugeColorForCloseness(m.priceClosenessPercent)}
         bawValue={formatPrice(m.bawAvgPrice)}
         tcValue={formatPrice(m.tcAvgPrice)}
       />

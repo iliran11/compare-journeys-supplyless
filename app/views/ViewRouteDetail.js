@@ -2,10 +2,7 @@
 
 import { useState } from 'react';
 import buildBawResultsUrl from '../logic/buildBawResultsUrl';
-import ViewTabBar from './ViewTabBar';
 import ViewRoot from './ViewRoot';
-import ViewVehicleClassCompare from './ViewVehicleClassCompare';
-import ViewPriceCompare from './ViewPriceCompare';
 
 export default function ViewRouteDetail({ route, date, config, onBack, onOpenJourney }) {
   const [showConfig, setShowConfig] = useState(false);
@@ -13,7 +10,6 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
   const [promptExpanded, setPromptExpanded] = useState(false);
   const [sortBy, setSortBy] = useState('departure');
   const [activePair, setActivePair] = useState(null);
-  const [activeTab, setActiveTab] = useState('compare');
 
   const result = route.result;
 
@@ -132,26 +128,14 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
         </div>
       )}
 
-      <ViewTabBar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {activeTab === 'compare' && (
-        <ViewRoot
-          result={result}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          activePair={activePair}
-          setActivePair={setActivePair}
-          onOpenJourney={onOpenJourney}
-        />
-      )}
-
-      {activeTab === 'vehicleClass' && (
-        <ViewVehicleClassCompare result={result} />
-      )}
-
-      {activeTab === 'price' && (
-        <ViewPriceCompare result={result} />
-      )}
+      <ViewRoot
+        result={result}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        activePair={activePair}
+        setActivePair={setActivePair}
+        onOpenJourney={onOpenJourney}
+      />
     </div>
   );
 }

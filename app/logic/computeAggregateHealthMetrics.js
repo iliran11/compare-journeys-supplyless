@@ -18,6 +18,11 @@ export default function computeAggregateHealthMetrics(routes) {
   const tcPictureTotal = done.reduce((sum, r) => sum + r.health.tcAvgPictures * r.health.tcPictureCount, 0);
   const tcAvgPictures = tcPictureCount === 0 ? null : tcPictureTotal / tcPictureCount;
 
+  const pictureClosenessPercent =
+    bawAvgPictures == null || tcAvgPictures == null || bawAvgPictures === 0
+      ? null
+      : Math.round((tcAvgPictures / bawAvgPictures) * 100);
+
   const bawPriceCount = done.reduce((sum, r) => sum + r.health.bawPriceCount, 0);
   const bawPriceTotal = done.reduce((sum, r) => sum + r.health.bawAvgPrice * r.health.bawPriceCount, 0);
   const bawAvgPrice = bawPriceCount === 0 ? null : bawPriceTotal / bawPriceCount;
@@ -25,6 +30,11 @@ export default function computeAggregateHealthMetrics(routes) {
   const tcPriceCount = done.reduce((sum, r) => sum + r.health.tcPriceCount, 0);
   const tcPriceTotal = done.reduce((sum, r) => sum + r.health.tcAvgPrice * r.health.tcPriceCount, 0);
   const tcAvgPrice = tcPriceCount === 0 ? null : tcPriceTotal / tcPriceCount;
+
+  const priceClosenessPercent =
+    bawAvgPrice == null || tcAvgPrice == null || tcAvgPrice === 0
+      ? null
+      : Math.round((bawAvgPrice / tcAvgPrice) * 100);
 
   const classTotal = done.reduce((sum, r) => sum + r.health.classTotal, 0);
   const classMismatchCount = done.reduce((sum, r) => sum + r.health.classMismatchCount, 0);
@@ -45,8 +55,10 @@ export default function computeAggregateHealthMetrics(routes) {
     duplicatePercent,
     bawAvgPictures,
     tcAvgPictures,
+    pictureClosenessPercent,
     bawAvgPrice,
     tcAvgPrice,
+    priceClosenessPercent,
     classTotal,
     classMatchCount,
     classMatchPercent,

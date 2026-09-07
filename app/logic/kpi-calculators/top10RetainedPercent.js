@@ -1,6 +1,6 @@
 const TOP_N = 10;
 
-export default function computeScoreMatchComparison(result) {
+export default function top10RetainedPercent(result) {
   const tcByGroup = new Map();
   for (const row of result.matchedTc) {
     if (!tcByGroup.has(row.groupId)) tcByGroup.set(row.groupId, []);
@@ -18,11 +18,5 @@ export default function computeScoreMatchComparison(result) {
     }
   }
 
-  const top10Total = bawTopRows.length;
-
-  return {
-    top10Total,
-    top10RetainedCount: retainedCount,
-    top10RetainedPercent: top10Total === 0 ? null : Math.round((retainedCount / top10Total) * 100)
-  };
+  return bawTopRows.length === 0 ? null : Math.round((retainedCount / bawTopRows.length) * 100);
 }
