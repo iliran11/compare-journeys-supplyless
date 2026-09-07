@@ -21,12 +21,13 @@ export default function ViewTransportMatchTab({ result }) {
             <th>Operator</th>
             <th>Matched</th>
             <th>Unmatched</th>
-            <th>Journeys → TC transport id(s)</th>
+            <th>BAW journey (current)</th>
+            <th>Candidate TC transport(s) for migration</th>
           </tr>
         </thead>
         <tbody>
           {summary.transports.length === 0 && (
-            <tr><td colSpan={5} className="empty">No BAW transports</td></tr>
+            <tr><td colSpan={6} className="empty">No BAW transports</td></tr>
           )}
           {summary.transports.map((t) => (
             <tr key={t.tripId} className={t.unmatchedCount === 0 ? 'row-match' : t.matchedCount === 0 ? 'row-nomatch' : 'row-partial'}>
@@ -43,6 +44,14 @@ export default function ViewTransportMatchTab({ result }) {
                   {t.rows.map((r, i) => (
                     <div key={i} className={'journey-line' + (r.matched ? ' matched' : ' unmatched')}>
                       <span className="journey-time">{r.departure.slice(11)}</span>
+                    </div>
+                  ))}
+                </div>
+              </td>
+              <td>
+                <div className="journey-list">
+                  {t.rows.map((r, i) => (
+                    <div key={i} className={'journey-line' + (r.matched ? ' matched' : ' unmatched')}>
                       {r.matched ? (
                         <span className="journey-tc-ids">
                           {r.tcTripIds.map((id, j) => (

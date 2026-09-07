@@ -8,7 +8,7 @@ import ViewTransportMatchTab from './ViewTransportMatchTab';
 
 const TABS = [
   { key: 'board', label: 'Board' },
-  { key: 'by-transport', label: 'By transport' },
+  { key: 'by-transport', label: 'Score migration mapping' },
 ];
 
 export default function ViewRouteDetail({ route, date, config, onBack, onOpenJourney }) {
