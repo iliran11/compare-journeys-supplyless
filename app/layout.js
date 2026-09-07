@@ -1,4 +1,5 @@
 import './globals.css';
+import RoutesProvider from './RoutesProvider';
 
 export const metadata = {
   title: 'TC vs BAW Journey Matcher',
@@ -18,7 +19,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <RoutesProvider>{children}</RoutesProvider>
+      </body>
     </html>
   );
 }

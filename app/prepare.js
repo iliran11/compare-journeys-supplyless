@@ -96,6 +96,7 @@ export function prepareComparison(tcRaw, bawRaw) {
     bawOnly: bawOnly,
     tcCount: tcRows.length,
     bawCount: bawRows.length,
-    matchedGroups: groupIdByKey.size
+    matchedGroups: groupIdByKey.size,
+    tcIsPartial: Boolean((tcRaw || {}).isPartial)
   };
 }

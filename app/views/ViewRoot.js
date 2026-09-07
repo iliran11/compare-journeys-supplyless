@@ -17,6 +17,7 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) 
       onClick={onOpen ? () => onOpen(pairId) : undefined}
     >
       <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
+      <span className="pic-count" title="Pictures">📷 {row.pictures ? row.pictures.length : 0}</span>
       <span className="lbl">operator</span><span className="op">{row.company}</span>
       <div className="detail-sections">
         <div className="detail-section">
