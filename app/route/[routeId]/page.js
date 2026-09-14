@@ -8,7 +8,7 @@ export default function RouteDetailPage() {
   const router = useRouter();
   const params = useParams();
   const routeId = decodeURIComponent(params.routeId);
-  const { findRoute, date, config } = useRoutes();
+  const { findRoute, date, configForRoute } = useRoutes();
   const route = findRoute(routeId);
 
   function goBack() {
@@ -37,7 +37,7 @@ export default function RouteDetailPage() {
       <ViewRouteDetail
         route={route}
         date={date}
-        config={config}
+        config={configForRoute(route)}
         onBack={goBack}
         onOpenJourney={openJourney}
       />

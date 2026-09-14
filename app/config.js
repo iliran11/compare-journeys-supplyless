@@ -4,24 +4,51 @@ export const ROUTES_STORAGE_KEY = "compare-search-supplyless:routes";
 
 export const SORT_BY_STORAGE_KEY = "compare-search-supplyless:sortBy";
 
+export const INTEGRATION_STORAGE_KEY = "compare-search-supplyless:integration";
+
 export const DEPARTURE_TIME_WINDOW_PADDING_MINUTES = 5;
 
-export const SEARCH_CONFIG = {
+// Settings shared by every integration type.
+export const COMMON_SEARCH_CONFIG = {
   tcCode: 'TRV',
   tcSupplierId: '64cb7cafdff7a93b3203f82b',
-  bawCode: 'PIN',
-  bawSupplierId: '660d57d138198f88d7da905c',
   passengersAmount: 2,
   searchRadiusInMeters: 1000,
   mode: 'origin',
-  skipEnrichment: false,
-  filterBySourceOfData: 'PIN'
+  skipEnrichment: false
 };
 
+// One entry per supplier-api integration being migrated. Keyed by BAW supplier code.
+// - bawSupplierId: the supplier company id in BAW (users-service companies).
+// - filterBySourceOfData: search-service operator allow-list key (debug-migration-data.js).
+// - dataProviderDateParam: query param appended to dataProviderLink with the search date, or null.
+export const INTEGRATIONS = {
+  PIN: {
+    code: 'PIN',
+    name: 'Pinbus',
+    bawSupplierId: '660d57d138198f88d7da905c',
+    filterBySourceOfData: 'PIN',
+    dataProviderName: 'PinBus',
+    dataProviderDateParam: 'salida'
+  },
+  GBB: {
+    code: 'GBB',
+    name: 'GetByBus',
+    bawSupplierId: '60cf2e027ea1b80001552ba6',
+    filterBySourceOfData: 'GBB',
+    dataProviderName: 'GetByBus',
+    dataProviderDateParam: null
+  }
+};
+
+export const DEFAULT_INTEGRATION = 'PIN';
+
+// Each preset must declare `integration` (a key of INTEGRATIONS).
 // Each route entry should include dataProviderLink and twelveGoLink. Use null if no link is available.
 export const PRESETS = [
   {
     name: "Pinbus Colombia",
+    integration: "PIN",
     routes: [
       {
         fromSlug: "barranquilla",
@@ -239,6 +266,63 @@ export const PRESETS = [
         dataProviderLink: null,
         twelveGoLink: null,
       }, // #31
+    ],
+  },
+  {
+    name: "GetByBus Balkans",
+    integration: "GBB",
+    // Top 50 GetByBus routes by Bookaway bookings (BigQuery export, Sep 2026). Links TBD.
+    routes: [
+      { fromSlug: "sarajevo", toSlug: "belgrade", countrySlug: "bosnia-and-herzegovina", dataProviderLink: null, twelveGoLink: null }, // #1
+      { fromSlug: "shkoder", toSlug: "tirana", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #2
+      { fromSlug: "mostar", toSlug: "kotor", countrySlug: "bosnia-and-herzegovina", dataProviderLink: null, twelveGoLink: null }, // #3
+      { fromSlug: "mostar", toSlug: "sarajevo", countrySlug: "bosnia-and-herzegovina", dataProviderLink: null, twelveGoLink: null }, // #4
+      { fromSlug: "tirana", toSlug: "shkoder", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #5
+      { fromSlug: "belgrade", toSlug: "sarajevo", countrySlug: "serbia", dataProviderLink: null, twelveGoLink: null }, // #6
+      { fromSlug: "split", toSlug: "hvar", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #7
+      { fromSlug: "tirana", toSlug: "saranda", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #8
+      { fromSlug: "dubrovnik", toSlug: "kotor", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #9
+      { fromSlug: "kotor", toSlug: "budva", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #10
+      { fromSlug: "kotor", toSlug: "dubrovnik", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #11
+      { fromSlug: "dubrovnik", toSlug: "korcula", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #12
+      { fromSlug: "ohrid", toSlug: "skopje", countrySlug: "north-macedonia", dataProviderLink: null, twelveGoLink: null }, // #13
+      { fromSlug: "kotor", toSlug: "mostar", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #14
+      { fromSlug: "saranda", toSlug: "tirana", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #15
+      { fromSlug: "kotor", toSlug: "podgorica", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #16
+      { fromSlug: "budva", toSlug: "podgorica", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #17
+      { fromSlug: "budva", toSlug: "tirana", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #18
+      { fromSlug: "sarajevo", toSlug: "mostar", countrySlug: "bosnia-and-herzegovina", dataProviderLink: null, twelveGoLink: null }, // #19
+      { fromSlug: "skopje", toSlug: "ohrid", countrySlug: "north-macedonia", dataProviderLink: null, twelveGoLink: null }, // #20
+      { fromSlug: "budva", toSlug: "shkoder", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #21
+      { fromSlug: "budva", toSlug: "kotor", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #22
+      { fromSlug: "dubrovnik", toSlug: "hvar", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #23
+      { fromSlug: "hvar", toSlug: "split", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #24
+      { fromSlug: "split", toSlug: "dubrovnik", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #25
+      { fromSlug: "shkoder", toSlug: "budva", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #26
+      { fromSlug: "sarajevo", toSlug: "podgorica", countrySlug: "bosnia-and-herzegovina", dataProviderLink: null, twelveGoLink: null }, // #27
+      { fromSlug: "podgorica", toSlug: "budva", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #28
+      { fromSlug: "shkoder", toSlug: "kotor", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #29
+      { fromSlug: "skopje", toSlug: "sofia", countrySlug: "north-macedonia", dataProviderLink: null, twelveGoLink: null }, // #30
+      { fromSlug: "hvar", toSlug: "dubrovnik", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #31
+      { fromSlug: "tirana", toSlug: "himare", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #32
+      { fromSlug: "podgorica", toSlug: "kotor", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #33
+      { fromSlug: "kotor", toSlug: "zabljak", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #34
+      { fromSlug: "dubrovnik", toSlug: "split", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #35
+      { fromSlug: "tirana", toSlug: "budva", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #36
+      { fromSlug: "kotor", toSlug: "tirana", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #37
+      { fromSlug: "belgrade", toSlug: "pristina", countrySlug: "serbia", dataProviderLink: null, twelveGoLink: null }, // #38
+      { fromSlug: "shkoder", toSlug: "podgorica", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #39
+      { fromSlug: "himare", toSlug: "tirana", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #40
+      { fromSlug: "tirana", toSlug: "kotor", countrySlug: "albania", dataProviderLink: null, twelveGoLink: null }, // #41
+      { fromSlug: "podgorica", toSlug: "shkoder", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #42
+      { fromSlug: "kotor", toSlug: "shkoder", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #43
+      { fromSlug: "podgorica", toSlug: "tirana", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #44
+      { fromSlug: "pristina", toSlug: "skopje", countrySlug: "kosovo", dataProviderLink: null, twelveGoLink: null }, // #45
+      { fromSlug: "skopje", toSlug: "pristina", countrySlug: "north-macedonia", dataProviderLink: null, twelveGoLink: null }, // #46
+      { fromSlug: "dubrovnik", toSlug: "mostar", countrySlug: "croatia", dataProviderLink: null, twelveGoLink: null }, // #47
+      { fromSlug: "podgorica", toSlug: "sarajevo", countrySlug: "montenegro", dataProviderLink: null, twelveGoLink: null }, // #48
+      { fromSlug: "sarajevo", toSlug: "mostar-east", countrySlug: "bosnia-and-herzegovina", dataProviderLink: null, twelveGoLink: null }, // #49
+      { fromSlug: "mostar", toSlug: "budva", countrySlug: "bosnia-and-herzegovina", dataProviderLink: null, twelveGoLink: null }, // #50
     ],
   },
 ];

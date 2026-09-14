@@ -1,3 +1,5 @@
+import hasZeroJourneys from './hasZeroJourneys';
+
 function sortValue(route, key) {
   switch (key) {
     case 'route':
@@ -19,11 +21,15 @@ function sortValue(route, key) {
   }
 }
 
+// Routes with zero BAW journeys always sink to the bottom; within each group the chosen column sort applies.
 export default function sortRoutes(routes, sortKey, sortDir) {
-  if (!sortKey) return routes;
   const dir = sortDir === 'desc' ? -1 : 1;
 
   return routes.slice().sort((a, b) => {
+    const az = hasZeroJourneys(a);
+    const bz = hasZeroJourneys(b);
+    if (az !== bz) return az ? 1 : -1;
+    if (!sortKey) return 0;
     const av = sortValue(a, sortKey);
     const bv = sortValue(b, sortKey);
     if (av == null && bv == null) return 0;

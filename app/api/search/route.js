@@ -1,3 +1,5 @@
+import fetchWithRetry from '../../logic/fetchWithRetry';
+
 const SEARCH_URL = 'https://www.bookaway.com/_api/search/composite/v1/search-results';
 
 const DEFAULT_CONFIG = {
@@ -38,21 +40,22 @@ export async function POST(request) {
         mode: config.mode,
         filterBySourceOfData: config.filterBySourceOfData
       };
-      console.log('[search] fetching ' + side + ' (' + supplier.code + ')');
-      const upstream = await fetch(SEARCH_URL, {
-        method: 'POST',
-        headers: {
+      const headers = {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
           origin: 'https://www.bookaway.com',
           referer: 'https://www.bookaway.com/s/search',
           'x-distribution-channel': 'bookaway',
           'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36'
-        },
-        body: JSON.stringify(body)
-      });
+      };
+      console.log('[search] ' + side + ' request: POST ' + SEARCH_URL + '\nheaders=' + JSON.stringify(headers) + '\nbody=' + JSON.stringify(body));
+      const upstream = await fetchWithRetry(SEARCH_URL, { method: 'POST', headers: headers, body: JSON.stringify(body) });
       if (!upstream.ok) {
-        throw new Error(side + ' upstream HTTP ' + upstream.status);
+        const text = await upstream.text();
+        console.log('[search] ' + side + ' upstream HTTP ' + upstream.status + ' body=' + text.slice(0, 2000));
+        const err = new Error(side.toUpperCase() + ' search upstream HTTP ' + upstream.status + (text ? ': ' + text.slice(0, 200) : ''));
+        err.upstreamStatus = upstream.status;
+        throw err;
       }
       results[side] = await upstream.json();
       console.log('[search] ' + side + ' ok, trips: ' + (results[side].trips || []).length);
@@ -61,6 +64,6 @@ export async function POST(request) {
     return Response.json(results);
   } catch (err) {
     console.log('[search] error: ' + err.message);
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message, upstreamStatus: err.upstreamStatus || null }, { status: err.upstreamStatus ? 502 : 500 });
   }
 }

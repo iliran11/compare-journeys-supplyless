@@ -19,6 +19,20 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) 
       <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
       <span className="pic-count" title="Pictures">📷 {row.pictures ? row.pictures.length : 0}</span>
       <span className="lbl">operator</span><span className="op">{row.company}</span>
+      {row.tripId && (
+        <div className="card-tripid">
+          <span className="lbl">transport id</span>
+          <a
+            className="triplink"
+            href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {row.tripId} ↗
+          </a>
+        </div>
+      )}
       <div className="detail-sections">
         <div className="detail-section">
           <div className="section-title">Departure</div>

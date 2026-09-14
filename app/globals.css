@@ -956,6 +956,21 @@ input[type="radio"],
   color: var(--muted);
   margin-bottom: 6px;
 }
+.pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+.route-group-count {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
 .route-group-progress {
   max-width: 1100px;
   margin-bottom: 10px;
@@ -1121,4 +1136,48 @@ input[type="radio"],
 .journey-line.unmatched .journey-tc-ids.no-match {
   color: var(--baw);
   font-style: italic;
+}
+
+.card .card-tripid {
+  font-size: 12px;
+  margin-top: 2px;
+}
+.card .card-tripid .lbl {
+  margin-right: 6px;
+}
+.journey-class {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 3px;
+  font-size: 11px;
+  background: var(--panel, rgba(0, 0, 0, 0.05));
+  color: var(--muted);
+}
+.journey-class.class-diff {
+  color: var(--baw);
+  border: 1px solid var(--baw);
+}
+
+.route-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+.route-links-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 4px;
+}
+.route-link.baw {
+  color: var(--baw);
+  border-color: var(--baw);
+}
+.route-link.tc {
+  color: var(--tc);
+  border-color: var(--tc);
 }

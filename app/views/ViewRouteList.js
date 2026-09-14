@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { INTEGRATIONS } from '../config';
 import gaugeColorForPercent from '../logic/gaugeColorForPercent';
 import sortRoutes from '../logic/sortRoutes';
 import ViewProgressBar from './ViewProgressBar';
@@ -69,7 +70,7 @@ function RouteRow({ route, seq, onSearchRoute, onOpenRoute, searchingAll }) {
   );
 }
 
-export default function ViewRouteList({ routes, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll, onOpenRoute }) {
+export default function ViewRouteList({ routes, integration, setIntegration, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll, onOpenRoute }) {
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
 
@@ -99,8 +100,10 @@ export default function ViewRouteList({ routes, date, setDate, searchingAll, sea
         </div>
         <div>
           <label htmlFor="integration">Integration</label>
-          <select id="integration" value="pinbus-colombia" disabled>
-            <option value="pinbus-colombia">Pinbus Colombia</option>
+          <select id="integration" value={integration} disabled={searchingAll} onChange={(e) => setIntegration(e.target.value)}>
+            {Object.values(INTEGRATIONS).map((item) => (
+              <option key={item.code} value={item.code}>{item.name} ({item.code})</option>
+            ))}
           </select>
         </div>
         <button onClick={onSearchAll} disabled={searchingAll}>
@@ -115,7 +118,7 @@ export default function ViewRouteList({ routes, date, setDate, searchingAll, sea
 
         return (
         <div key={presetName} className="route-group">
-          <h2 className="route-group-title">{presetName}</h2>
+          <h2 className="route-group-title">{presetName} <span className="pill">{presetRoutes[0].integration}</span> <span className="route-group-count">{presetRoutes.length} routes</span></h2>
           <div className="route-group-progress">
             <ViewProgressBar percent={searchedPercent} color={gaugeColorForPercent(searchedPercent)} />
           </div>

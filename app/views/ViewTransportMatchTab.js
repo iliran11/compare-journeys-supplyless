@@ -19,6 +19,7 @@ export default function ViewTransportMatchTab({ result }) {
           <tr>
             <th>Transport id</th>
             <th>Operator</th>
+            <th>Class</th>
             <th>Matched</th>
             <th>Unmatched</th>
             <th>BAW journey (current)</th>
@@ -27,7 +28,7 @@ export default function ViewTransportMatchTab({ result }) {
         </thead>
         <tbody>
           {summary.transports.length === 0 && (
-            <tr><td colSpan={6} className="empty">No BAW transports</td></tr>
+            <tr><td colSpan={7} className="empty">No BAW transports</td></tr>
           )}
           {summary.transports.map((t) => (
             <tr key={t.tripId} className={t.unmatchedCount === 0 ? 'row-match' : t.matchedCount === 0 ? 'row-nomatch' : 'row-partial'}>
@@ -37,6 +38,7 @@ export default function ViewTransportMatchTab({ result }) {
                 </a>
               </td>
               <td>{t.company}</td>
+              <td>{t.lineClass || '—'}</td>
               <td>{t.matchedCount}</td>
               <td>{t.unmatchedCount}</td>
               <td>
@@ -44,6 +46,7 @@ export default function ViewTransportMatchTab({ result }) {
                   {t.rows.map((r, i) => (
                     <div key={i} className={'journey-line' + (r.matched ? ' matched' : ' unmatched')}>
                       <span className="journey-time">{r.departure.slice(11)}</span>
+                      <span className="journey-class">{r.lineClass || '—'}</span>
                     </div>
                   ))}
                 </div>
@@ -54,14 +57,17 @@ export default function ViewTransportMatchTab({ result }) {
                     <div key={i} className={'journey-line' + (r.matched ? ' matched' : ' unmatched')}>
                       {r.matched ? (
                         <span className="journey-tc-ids">
-                          {r.tcTripIds.map((id, j) => (
-                            <span key={id}>
+                          {r.tcTrips.map((t, j) => (
+                            <span key={t.tripId}>
                               {j > 0 && ', '}
-                              {id}
+                              {t.tripId}
+                              <span className={'journey-class' + (t.lineClass && t.lineClass !== r.lineClass ? ' class-diff' : '')} title={t.lineClass !== r.lineClass ? 'Class differs from BAW' : undefined}>
+                                {t.lineClass || '—'}
+                              </span>
                             </span>
                           ))}
-                          {r.tcTripIds.length > 1 && (
-                            <span className="multi-warn" title="Matched more than one TC transport">×{r.tcTripIds.length}</span>
+                          {r.tcTrips.length > 1 && (
+                            <span className="multi-warn" title="Matched more than one TC transport">×{r.tcTrips.length}</span>
                           )}
                         </span>
                       ) : (

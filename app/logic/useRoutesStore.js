@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PRESETS, SEARCH_CONFIG } from '../config';
+import { PRESETS } from '../config';
 import { prepareComparison } from '../prepare';
-import clearRoutesStorage from './clearRoutesStorage';
 import computeHealthMetrics from './computeHealthMetrics';
 import flattenPresetRoutes from './flattenPresetRoutes';
 import loadStoredRoutes from './loadStoredRoutes';
 import mergeStoredRoutes from './mergeStoredRoutes';
+import useIntegrationPreference from './useIntegrationPreference';
+import resolveSearchConfig from './resolveSearchConfig';
 import saveRoutesToStorage from './saveRoutesToStorage';
 
 export default function useRoutesStore() {
@@ -17,6 +18,7 @@ export default function useRoutesStore() {
     d.setDate(d.getDate() + 2);
     return d.toISOString().slice(0, 10);
   });
+  const [integration, setIntegration] = useIntegrationPreference();
   const [searchingAll, setSearchingAll] = useState(false);
   const [searchAllProgress, setSearchAllProgress] = useState({ done: 0, total: 0 });
 
@@ -30,6 +32,7 @@ export default function useRoutesStore() {
 
   async function searchRoute(route) {
     updateRoute(route.id, { status: 'loading', error: null });
+    const searchConfig = resolveSearchConfig(route.integration);
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
@@ -39,18 +42,18 @@ export default function useRoutesStore() {
           toSlug: route.toSlug,
           date: date.trim(),
           config: {
-            tcSupplier: { code: SEARCH_CONFIG.tcCode, supplierId: SEARCH_CONFIG.tcSupplierId },
-            bawSupplier: { code: SEARCH_CONFIG.bawCode, supplierId: SEARCH_CONFIG.bawSupplierId },
-            passengersAmount: Number(SEARCH_CONFIG.passengersAmount) || 1,
-            searchRadiusInMeters: Number(SEARCH_CONFIG.searchRadiusInMeters) || 1000,
-            mode: SEARCH_CONFIG.mode,
-            skipEnrichment: SEARCH_CONFIG.skipEnrichment,
-            filterBySourceOfData: SEARCH_CONFIG.filterBySourceOfData
+            tcSupplier: { code: searchConfig.tcCode, supplierId: searchConfig.tcSupplierId },
+            bawSupplier: { code: searchConfig.bawCode, supplierId: searchConfig.bawSupplierId },
+            passengersAmount: Number(searchConfig.passengersAmount) || 1,
+            searchRadiusInMeters: Number(searchConfig.searchRadiusInMeters) || 1000,
+            mode: searchConfig.mode,
+            skipEnrichment: searchConfig.skipEnrichment,
+            filterBySourceOfData: searchConfig.filterBySourceOfData
           }
         })
       });
-      if (!res.ok) throw new Error('search API returned ' + res.status);
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'search API returned ' + res.status);
 
       const prepared = prepareComparison(data.tc, data.baw);
       const health = computeHealthMetrics(prepared);
@@ -68,16 +71,17 @@ export default function useRoutesStore() {
     }
   }
 
+  // Resets and re-searches only the routes of the selected integration; other integrations keep their results.
   async function searchAll() {
-    clearRoutesStorage();
     const freshRoutes = flattenPresetRoutes(PRESETS);
-    setRoutes(freshRoutes);
+    const targets = freshRoutes.filter((r) => r.integration === integration);
+    setRoutes((prev) => prev.map((r) => (r.integration === integration ? freshRoutes.find((f) => f.id === r.id) || r : r)));
 
     setSearchingAll(true);
-    setSearchAllProgress({ done: 0, total: freshRoutes.length });
-    for (let i = 0; i < freshRoutes.length; i++) {
-      await searchRoute(freshRoutes[i]);
-      setSearchAllProgress({ done: i + 1, total: freshRoutes.length });
+    setSearchAllProgress({ done: 0, total: targets.length });
+    for (let i = 0; i < targets.length; i++) {
+      await searchRoute(targets[i]);
+      setSearchAllProgress({ done: i + 1, total: targets.length });
     }
     setSearchingAll(false);
   }
@@ -93,6 +97,8 @@ export default function useRoutesStore() {
 
   return {
     routes,
+    integration,
+    setIntegration,
     date,
     setDate,
     searchingAll,
@@ -100,6 +106,6 @@ export default function useRoutesStore() {
     onSearchRoute: handleSearchRoute,
     onSearchAll: searchAll,
     findRoute,
-    config: SEARCH_CONFIG
+    configForRoute: (route) => resolveSearchConfig(route && route.integration)
   };
 }

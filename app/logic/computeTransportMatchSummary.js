@@ -1,12 +1,12 @@
 export default function computeTransportMatchSummary(result) {
   const bawRows = result.matchedBaw.concat(result.bawOnly);
 
-  const tcTripIdsByGroup = new Map();
+  const tcTripsByGroup = new Map();
   for (const row of result.matchedTc) {
-    if (!tcTripIdsByGroup.has(row.groupId)) {
-      tcTripIdsByGroup.set(row.groupId, new Set());
+    if (!tcTripsByGroup.has(row.groupId)) {
+      tcTripsByGroup.set(row.groupId, new Map());
     }
-    tcTripIdsByGroup.get(row.groupId).add(row.tripId);
+    tcTripsByGroup.get(row.groupId).set(row.tripId, { tripId: row.tripId, lineClass: row.lineClass || '' });
   }
 
   const byTripId = new Map();
@@ -16,6 +16,7 @@ export default function computeTransportMatchSummary(result) {
       byTripId.set(tripId, {
         tripId: tripId,
         company: row.company,
+        lineClass: row.lineClass || '',
         matchedCount: 0,
         unmatchedCount: 0,
         rows: []
@@ -28,13 +29,15 @@ export default function computeTransportMatchSummary(result) {
     } else {
       entry.unmatchedCount += 1;
     }
-    const tcTripIds = matched ? Array.from(tcTripIdsByGroup.get(row.groupId) || []) : [];
+    const tcTrips = matched ? Array.from((tcTripsByGroup.get(row.groupId) || new Map()).values()) : [];
     entry.rows.push({
       matched: matched,
       departure: row.departure,
       arrival: row.arrival,
+      lineClass: row.lineClass || '',
       tcMatchCount: matched ? row.tcMatchCount : 0,
-      tcTripIds: tcTripIds
+      tcTripIds: tcTrips.map((t) => t.tripId),
+      tcTrips: tcTrips
     });
   }
 

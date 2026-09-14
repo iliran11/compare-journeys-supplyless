@@ -1,13 +1,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { INTEGRATIONS } from './config';
 import useRoutes from './logic/useRoutes';
 import ViewHealthDashboard from './views/ViewHealthDashboard';
 import ViewRouteList from './views/ViewRouteList';
 
 export default function Page() {
   const router = useRouter();
-  const { routes, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll } = useRoutes();
+  const { routes, integration, setIntegration, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll } = useRoutes();
+  const visibleRoutes = routes.filter((r) => r.integration === integration);
+  const presetNames = [...new Set(visibleRoutes.map((r) => r.presetName))].join(', ');
 
   function openRoute(id) {
     router.push('/route/' + encodeURIComponent(id));
@@ -16,12 +19,14 @@ export default function Page() {
   return (
     <main>
       <h1>TC vs BAW Journey Matcher</h1>
-      <div className="sub">Supply-parity health dashboard across Pinbus Colombia routes</div>
+      <div className="sub">Supply-parity health dashboard across {INTEGRATIONS[integration].name} routes ({presetNames})</div>
 
-      <ViewHealthDashboard routes={routes} />
+      <ViewHealthDashboard routes={visibleRoutes} />
 
       <ViewRouteList
-        routes={routes}
+        routes={visibleRoutes}
+        integration={integration}
+        setIntegration={setIntegration}
         date={date}
         setDate={setDate}
         searchingAll={searchingAll}

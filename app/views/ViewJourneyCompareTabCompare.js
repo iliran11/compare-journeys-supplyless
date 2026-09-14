@@ -2,6 +2,8 @@
 
 import buildFilterParams from '../logic/buildFilterParams';
 import buildDataProviderUrl from '../logic/buildDataProviderUrl';
+import buildDebugValue from '../logic/buildDebugValue';
+import resolveSearchConfig from '../logic/resolveSearchConfig';
 import buildTwelveGoUrl from '../logic/buildTwelveGoUrl';
 import ViewJourneyDetailCard from './ViewJourneyDetailCard';
 
@@ -9,6 +11,7 @@ export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow
   const filterParams = groupRow ? buildFilterParams(groupRow).filterParams : '';
   const dataProviderUrl = buildDataProviderUrl(route, date);
   const twelveGoUrl = buildTwelveGoUrl(route);
+  const { dataProviderName } = resolveSearchConfig(route && route.integration);
 
   return (
     <>
@@ -19,7 +22,7 @@ export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow
             <ViewJourneyDetailCard key={i} row={r} side="baw" />
           ))}
           {groupRow && (
-            <a className="secondary links-cta" href={bawResultsUrl('PIN-BAW') + filterParams} target="_blank" rel="noreferrer">
+            <a className="secondary links-cta" href={bawResultsUrl(buildDebugValue(route, 'baw')) + filterParams} target="_blank" rel="noreferrer">
               Open BAW search results ↗
             </a>
           )}
@@ -29,7 +32,7 @@ export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow
             <ViewJourneyDetailCard key={i} row={r} side="tc" />
           ))}
           {groupRow && (
-            <a className="secondary links-cta" href={bawResultsUrl('PIN-TC') + filterParams} target="_blank" rel="noreferrer">
+            <a className="secondary links-cta" href={bawResultsUrl(buildDebugValue(route, 'tc')) + filterParams} target="_blank" rel="noreferrer">
               Open TC search results ↗
             </a>
           )}
@@ -39,7 +42,7 @@ export default function ViewJourneyCompareTabCompare({ bawRows, tcRows, groupRow
       <div className="links-section">
         {dataProviderUrl && (
           <a className="secondary links-cta" href={dataProviderUrl} target="_blank" rel="noreferrer">
-            Open PinBus search ↗
+            Open {dataProviderName} search ↗
           </a>
         )}
         {!dataProviderUrl && <span className="empty">No data provider link for this route.</span>}

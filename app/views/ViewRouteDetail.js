@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import buildBawResultsUrl from '../logic/buildBawResultsUrl';
+import buildDebugValue from '../logic/buildDebugValue';
 import useSortByPreference from '../logic/useSortByPreference';
 import ViewRoot from './ViewRoot';
+import ViewRouteLinks from './ViewRouteLinks';
 import ViewTransportMatchTab from './ViewTransportMatchTab';
 
 const TABS = [
@@ -25,6 +27,9 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
     return buildBawResultsUrl(route, date, debugValue);
   }
 
+  const debugTc = buildDebugValue(route, 'tc');
+  const debugBaw = buildDebugValue(route, 'baw');
+
   const botPrompt =
     '#RAW RESULTS FROM TC\n' + JSON.stringify(route.rawTc, null, 2) +
     '\n\n#RAW RESULTS FROM BAW\n' + JSON.stringify(route.rawBaw, null, 2);
@@ -33,7 +38,7 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
     <div className="page">
       <div className="page-head">
         <div className="config-title">
-          {route.fromSlug} → {route.toSlug} <b>{date}</b>
+          {route.fromSlug} → {route.toSlug} <b>{date}</b> <span className="pill">{config.integrationName} ({config.integration})</span>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <button
@@ -48,6 +53,8 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
           <button className="secondary" onClick={onBack}>← Back to list</button>
         </div>
       </div>
+
+      <ViewRouteLinks route={route} date={date} />
 
       {showConfig && (
         <div className="config">
@@ -90,8 +97,8 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
                 <input id="tcSupplierId" className="wide" value={config.tcSupplierId} readOnly />
               </div>
               <div className="openlink">
-                <button className="secondary" onClick={() => window.open(bawResultsUrl('PIN-TC'), '_blank')} title={bawResultsUrl('PIN-TC')}>
-                  BAW search results (?debug=PIN-TC) ↗
+                <button className="secondary" onClick={() => window.open(bawResultsUrl(debugTc), '_blank')} title={bawResultsUrl(debugTc)}>
+                  BAW search results (?debug={debugTc}) ↗
                 </button>
               </div>
             </div>
@@ -109,8 +116,8 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
                 <input id="bawSupplierId" className="wide" value={config.bawSupplierId} readOnly />
               </div>
               <div className="openlink">
-                <button className="secondary" onClick={() => window.open(bawResultsUrl('PIN-BAW'), '_blank')} title={bawResultsUrl('PIN-BAW')}>
-                  BAW search results (?debug=PIN-BAW) ↗
+                <button className="secondary" onClick={() => window.open(bawResultsUrl(debugBaw), '_blank')} title={bawResultsUrl(debugBaw)}>
+                  BAW search results (?debug={debugBaw}) ↗
                 </button>
               </div>
             </div>
