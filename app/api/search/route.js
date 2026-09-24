@@ -9,10 +9,13 @@ const DEFAULT_CONFIG = {
   searchRadiusInMeters: 1000,
   mode: 'origin',
   skipEnrichment: false,
-  filterBySourceOfData: 'PIN'
+  filterBySourceOfData: 'PIN',
+  enableClickbusmx12goB2bOnTc: true
 };
 
 export async function POST(request) {
+  // Exact search-results bodies per side, echoed back so the browser can log them.
+  const requests = {};
   try {
     const input = await request.json();
     const config = Object.assign({}, DEFAULT_CONFIG, input.config || {});
@@ -40,6 +43,10 @@ export async function POST(request) {
         mode: config.mode,
         filterBySourceOfData: config.filterBySourceOfData
       };
+      if (side === 'tc' && config.enableClickbusmx12goB2bOnTc) {
+        body.enable_clickbusmx_12gob2b = true;
+      }
+      requests[side] = body;
       const headers = {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
@@ -61,9 +68,9 @@ export async function POST(request) {
       console.log('[search] ' + side + ' ok, trips: ' + (results[side].trips || []).length);
     }
 
-    return Response.json(results);
+    return Response.json({ ...results, requests: requests });
   } catch (err) {
     console.log('[search] error: ' + err.message);
-    return Response.json({ error: err.message, upstreamStatus: err.upstreamStatus || null }, { status: err.upstreamStatus ? 502 : 500 });
+    return Response.json({ error: err.message, upstreamStatus: err.upstreamStatus || null, requests: requests }, { status: err.upstreamStatus ? 502 : 500 });
   }
 }

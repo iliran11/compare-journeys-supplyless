@@ -57,6 +57,7 @@ Whenever writing scripts in ./scripts folder:
 ### Search requests
 
 - This app calls `POST https://www.bookaway.com/_api/search/composite/v1/search-results` twice: once for TC (`TRV`, supplier ID `64cb7cafdff7a93b3203f82b`) and once for the selected Bookaway integration (for example, `PIN` or `GBB`). Both sides use the same route, date, passengers, search radius and `filterBySourceOfData` value.
+- TC requests also send `enable_clickbusmx_12gob2b: true` (`COMMON_SEARCH_CONFIG.enableClickbusmx12goB2bOnTc`). search-service forces that experiment and skips saving those trips to the shared online-journeys store; supplier-api drops TRV segments whose 12go `integration_code` is in `SUPPLIER_TRAVELIER_CONNECT_EXCLUDED_INTEGRATION_CODES` (default `clickbusmx`). Empty TC results on Clickbus MX routes are expected.
 - The defaults are two adults aged 35, a 1,000-metre search radius, `resultsOrder: false`, `mode: 'origin'` and `skipEnrichment: false`. Integration settings come from `app/config.js`, are resolved by `app/logic/resolveSearchConfig.js`, and are sent through `app/logic/useRoutesStore.js` and `app/api/search/route.js`.
 - The `baw` label here means the selected direct supplier-api integration. In search-service, these requests use `fetchOnlineTrips`, just like TRV. The separate Bookaway/local-inventory branch uses `fetchBookawayTrips`; its `suppliers` parameter excludes suppliers from local inventory rather than selecting the online provider.
 

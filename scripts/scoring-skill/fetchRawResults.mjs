@@ -103,6 +103,9 @@ async function search(side, route, date, supplier, filterBySourceOfData) {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36'
   };
   const body = buildBody(route, date, supplier, filterBySourceOfData);
+  if (side === 'tc' && COMMON_SEARCH_CONFIG.enableClickbusmx12goB2bOnTc) {
+    body.enable_clickbusmx_12gob2b = true;
+  }
   console.log('[' + side + '] POST ' + SEARCH_URL + ' supplier=' + JSON.stringify(supplier));
   const res = await fetchWithRetry(SEARCH_URL, { method: 'POST', headers: headers, body: JSON.stringify(body) });
   const text = await res.text();

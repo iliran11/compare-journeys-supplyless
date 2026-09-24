@@ -79,7 +79,7 @@ export default function ViewRouteDetail({ route, date, config, tcIntegrationFilt
                 </div>
                 <div>
                   <label htmlFor="filterBySourceOfData">Filter by source of data</label>
-                  <input id="filterBySourceOfData" value={config.filterBySourceOfData} readOnly />
+                  <input id="filterBySourceOfData" value={config.filterBySourceOfData || '—'} readOnly />
                 </div>
               </div>
             )}
@@ -95,6 +95,10 @@ export default function ViewRouteDetail({ route, date, config, tcIntegrationFilt
               <div>
                 <label htmlFor="tcSupplierId">Supplier ID</label>
                 <input id="tcSupplierId" className="wide" value={config.tcSupplierId} readOnly />
+              </div>
+              <div>
+                <label htmlFor="tcEnableClickbusmx">enable_clickbusmx_12gob2b</label>
+                <input id="tcEnableClickbusmx" value={String(Boolean(config.enableClickbusmx12goB2bOnTc))} readOnly />
               </div>
               <div className="openlink">
                 <button className="secondary" onClick={() => window.open(bawResultsUrl(debugTc), '_blank')} title={bawResultsUrl(debugTc)}>
