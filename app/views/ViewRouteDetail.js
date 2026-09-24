@@ -13,7 +13,7 @@ const TABS = [
   { key: 'by-transport', label: 'Score migration mapping' },
 ];
 
-export default function ViewRouteDetail({ route, date, config, onBack, onOpenJourney }) {
+export default function ViewRouteDetail({ route, date, config, tcIntegrationFilter, onBack, onOpenJourney }) {
   const [showConfig, setShowConfig] = useState(false);
   const [showCommon, setShowCommon] = useState(false);
   const [promptExpanded, setPromptExpanded] = useState(false);
@@ -21,7 +21,7 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
   const [activePair, setActivePair] = useState(null);
   const [activeTab, setActiveTab] = useState('board');
 
-  const result = route.result;
+  const result = tcIntegrationFilter.result;
 
   function bawResultsUrl(debugValue) {
     return buildBawResultsUrl(route, date, debugValue);
@@ -79,7 +79,7 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
                 </div>
                 <div>
                   <label htmlFor="filterBySourceOfData">Filter by source of data</label>
-                  <input id="filterBySourceOfData" value={config.filterBySourceOfData} readOnly />
+                  <input id="filterBySourceOfData" value={config.filterBySourceOfData || '—'} readOnly />
                 </div>
               </div>
             )}
@@ -95,6 +95,10 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
               <div>
                 <label htmlFor="tcSupplierId">Supplier ID</label>
                 <input id="tcSupplierId" className="wide" value={config.tcSupplierId} readOnly />
+              </div>
+              <div>
+                <label htmlFor="tcEnableClickbusmx">enable_clickbusmx_12gob2b</label>
+                <input id="tcEnableClickbusmx" value={String(Boolean(config.enableClickbusmx12goB2bOnTc))} readOnly />
               </div>
               <div className="openlink">
                 <button className="secondary" onClick={() => window.open(bawResultsUrl(debugTc), '_blank')} title={bawResultsUrl(debugTc)}>
@@ -163,6 +167,8 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
           activePair={activePair}
           setActivePair={setActivePair}
           onOpenJourney={onOpenJourney}
+          tcIntegrationFilter={tcIntegrationFilter}
+          bawIntegrationName={config.integrationName}
         />
       )}
       {activeTab === 'by-transport' && <ViewTransportMatchTab result={result} />}

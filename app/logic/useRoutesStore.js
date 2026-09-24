@@ -48,11 +48,16 @@ export default function useRoutesStore() {
             searchRadiusInMeters: Number(searchConfig.searchRadiusInMeters) || 1000,
             mode: searchConfig.mode,
             skipEnrichment: searchConfig.skipEnrichment,
-            filterBySourceOfData: searchConfig.filterBySourceOfData
+            filterBySourceOfData: searchConfig.filterBySourceOfData,
+            enableClickbusmx12goB2bOnTc: searchConfig.enableClickbusmx12goB2bOnTc
           }
         })
       });
       const data = await res.json().catch(() => ({}));
+      console.groupCollapsed('[search-results] ' + route.fromSlug + ' -> ' + route.toSlug + ' ' + date.trim() + ' (' + searchConfig.integration + ')');
+      console.log('tc body', data.requests && data.requests.tc);
+      console.log('baw body', data.requests && data.requests.baw);
+      console.groupEnd();
       if (!res.ok) throw new Error(data.error || 'search API returned ' + res.status);
 
       const prepared = prepareComparison(data.tc, data.baw);

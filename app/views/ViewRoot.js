@@ -2,6 +2,8 @@
 
 import sortRows from '../logic/sortRows';
 import useWireDrawing from '../logic/useWireDrawing';
+import ViewBawIntegrationFilter from './ViewBawIntegrationFilter';
+import ViewTcIntegrationFilter from './ViewTcIntegrationFilter';
 
 function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) {
   let className = 'card ' + side + (unmatched ? ' unmatched' : '');
@@ -19,6 +21,11 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) 
       <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
       <span className="pic-count" title="Pictures">📷 {row.pictures ? row.pictures.length : 0}</span>
       <span className="lbl">operator</span><span className="op">{row.company}</span>
+      {side === 'tc' && (
+        <div className="card-integration">
+          <span className="lbl">integration</span><span className="val">{row.integrationCode}</span>
+        </div>
+      )}
       {row.tripId && (
         <div className="card-tripid">
           <span className="lbl">transport id</span>
@@ -49,7 +56,7 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) 
   );
 }
 
-export default function ViewRoot({ result, sortBy, setSortBy, activePair, setActivePair, onOpenJourney }) {
+export default function ViewRoot({ result, sortBy, setSortBy, activePair, setActivePair, onOpenJourney, tcIntegrationFilter, bawIntegrationName }) {
   const { wires, boardRef, tcColRef, bawColRef } = useWireDrawing(result, sortBy);
 
   return (
@@ -68,6 +75,14 @@ export default function ViewRoot({ result, sortBy, setSortBy, activePair, setAct
           <input type="radio" name="sortBy" value="score" checked={sortBy === 'score'} onChange={() => setSortBy('score')} />
           {' '}Score
         </label>
+      </div>
+      <div className="colfilters">
+        <div className="colfilter">
+          <ViewBawIntegrationFilter integrationName={bawIntegrationName} count={result.bawCount} />
+        </div>
+        <div className="colfilter">
+          <ViewTcIntegrationFilter filter={tcIntegrationFilter} />
+        </div>
       </div>
       <div className="colheads"><span className="baw">BAW</span><span className="tc">TC</span></div>
       <div className="board" ref={boardRef}>

@@ -3,6 +3,7 @@
 import { useRouter, useParams } from 'next/navigation';
 import buildBawResultsUrl from '../../../../logic/buildBawResultsUrl';
 import useRoutes from '../../../../logic/useRoutes';
+import useTcIntegrationFilter from '../../../../logic/useTcIntegrationFilter';
 import ViewJourneyCompare from '../../../../views/ViewJourneyCompare';
 
 export default function JourneyComparePage() {
@@ -12,9 +13,10 @@ export default function JourneyComparePage() {
   const groupId = Number(params.groupId);
   const { findRoute, date } = useRoutes();
   const route = findRoute(routeId);
+  const tcIntegrationFilter = useTcIntegrationFilter(route);
 
   function goBack() {
-    router.push('/route/' + encodeURIComponent(routeId));
+    router.push('/route/' + encodeURIComponent(routeId) + tcIntegrationFilter.querySuffix);
   }
 
   if (!route || route.status !== 'done') {
@@ -37,7 +39,7 @@ export default function JourneyComparePage() {
   return (
     <main>
       <ViewJourneyCompare
-        result={route.result}
+        result={tcIntegrationFilter.result}
         detailGroup={groupId}
         onBack={goBack}
         bawResultsUrl={bawResultsUrl}
