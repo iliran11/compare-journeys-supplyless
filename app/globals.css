@@ -1181,3 +1181,41 @@ input[type="radio"],
   color: var(--tc);
   border-color: var(--tc);
 }
+
+.colfilters {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1100px;
+}
+.colfilter {
+  width: 40%;
+}
+.integration-filter {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  margin-bottom: 8px;
+}
+.integration-filter .sortbar-label.tc {
+  color: var(--tc);
+}
+.integration-filter .sortbar-label.baw {
+  color: var(--baw);
+}
+.integration-filter label.locked,
+.integration-filter label.locked input {
+  cursor: default;
+}
+.integration-filter .muted {
+  color: var(--muted);
+}
+.integration-filter input[type="checkbox"] {
+  cursor: pointer;
+}
+.card .card-integration {
+  font-size: 12px;
+  margin-top: 2px;
+}
+.card .card-integration .lbl {
+  margin-right: 6px;
+}

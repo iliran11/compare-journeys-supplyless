@@ -6,6 +6,9 @@ export default function ViewJourneyDetailCard({ row, side }) {
       <div className={'detail-title ' + side}>{side === 'baw' ? 'BAW' : 'TC'}</div>
       <div className="detail-row detail-row-top">
         <div><span className="lbl">operator</span><span className="op">{row.company}</span></div>
+        {side === 'tc' && (
+          <div><span className="lbl">integration</span><span className="val">{row.integrationCode}</span></div>
+        )}
         <div className="price"><span className="lbl">price</span><span className="val">{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span></div>
       </div>
       <div className="detail-sections">

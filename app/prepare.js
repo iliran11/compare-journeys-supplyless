@@ -1,4 +1,5 @@
 import kebabCase from 'lodash/kebabCase';
+import journeyIntegrationCode from './logic/journeyIntegrationCode';
 
 function assignMatchedScoreRank(rows) {
   const byScore = rows.slice().sort(function (a, b) {
@@ -38,6 +39,7 @@ export function prepareComparison(tcRaw, bawRaw) {
             departure: departure,
             arrival: arrival,
             price: journey.price ? journey.price.amount : null,
+            integrationCode: journeyIntegrationCode(journey),
             score: typeof trip.originalScore === 'number' ? trip.originalScore : (typeof trip.score === 'number' ? trip.score : 0),
             pictures: (leg.pictures || []).map(function (p) { return p && p.url ? 'https://cdn.bookaway.com/media/files/' + p.url : ''; }).filter(Boolean),
             matchKey: companyKey + '|' + departure + '|' + arrival,

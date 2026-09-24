@@ -13,7 +13,7 @@ const TABS = [
   { key: 'by-transport', label: 'Score migration mapping' },
 ];
 
-export default function ViewRouteDetail({ route, date, config, onBack, onOpenJourney }) {
+export default function ViewRouteDetail({ route, date, config, tcIntegrationFilter, onBack, onOpenJourney }) {
   const [showConfig, setShowConfig] = useState(false);
   const [showCommon, setShowCommon] = useState(false);
   const [promptExpanded, setPromptExpanded] = useState(false);
@@ -21,7 +21,7 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
   const [activePair, setActivePair] = useState(null);
   const [activeTab, setActiveTab] = useState('board');
 
-  const result = route.result;
+  const result = tcIntegrationFilter.result;
 
   function bawResultsUrl(debugValue) {
     return buildBawResultsUrl(route, date, debugValue);
@@ -163,6 +163,8 @@ export default function ViewRouteDetail({ route, date, config, onBack, onOpenJou
           activePair={activePair}
           setActivePair={setActivePair}
           onOpenJourney={onOpenJourney}
+          tcIntegrationFilter={tcIntegrationFilter}
+          bawIntegrationName={config.integrationName}
         />
       )}
       {activeTab === 'by-transport' && <ViewTransportMatchTab result={result} />}

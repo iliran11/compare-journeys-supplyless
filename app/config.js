@@ -8,6 +8,12 @@ export const INTEGRATION_STORAGE_KEY = "compare-search-supplyless:integration";
 
 export const DEPARTURE_TIME_WINDOW_PADDING_MINUTES = 5;
 
+// Route-page URL param holding the selected TC integration codes (absent = all).
+export const TC_INTEGRATIONS_QUERY_PARAM = "tcIntegrations";
+
+// Label for TC journeys that carry no supplierApiData.integrationCode.
+export const NO_INTEGRATION_CODE = "none";
+
 // Settings shared by every integration type.
 export const COMMON_SEARCH_CONFIG = {
   tcCode: "TRV",
@@ -20,7 +26,7 @@ export const COMMON_SEARCH_CONFIG = {
 
 // One entry per supplier-api integration being migrated. Keyed by BAW supplier code.
 // - bawSupplierId: the supplier company id in BAW (users-service companies).
-// - filterBySourceOfData: search-service operator allow-list key (debug-migration-data.js).
+// - filterBySourceOfData: search-service feature-flag key (debug-migration-data.js).
 // - dataProviderDateParam: query param appended to dataProviderLink with the search date, or null.
 export const INTEGRATIONS = {
   PIN: {
@@ -37,6 +43,22 @@ export const INTEGRATIONS = {
     bawSupplierId: "60cf2e027ea1b80001552ba6",
     filterBySourceOfData: "GBB",
     dataProviderName: "GetByBus",
+    dataProviderDateParam: null,
+  },
+  CLB: {
+    code: "CLB",
+    name: "Clickbus",
+    bawSupplierId: "60003f439087dcfee5da2f6d",
+    filterBySourceOfData: "CLB",
+    dataProviderName: "Clickbus",
+    dataProviderDateParam: null,
+  },
+  DSB: {
+    code: "DSB",
+    name: "Distribusion",
+    bawSupplierId: "5fe87b31e093910001cbcb16",
+    filterBySourceOfData: "DSB",
+    dataProviderName: "Distribusion",
     dataProviderDateParam: null,
   },
 };
@@ -335,6 +357,15 @@ export const PRESETS = [
     // Top 50 GetByBus routes by Bookaway bookings (BigQuery export, Sep 2026). Links TBD.
     routes: [
       {
+        fromSlug: "budva",
+        fromCityId: "5f15a67c91f08f21a36e4441",
+        toSlug: "tirana",
+        toCityId: "5f20176b25b0951769af09df",
+        countrySlug: "montenegro",
+        dataProviderLink: null,
+        twelveGoLink: null,
+      }, // #18
+      {
         fromSlug: "sarajevo",
         fromCityId: "5f968220562650e2fd75a2c3",
         toSlug: "belgrade",
@@ -487,15 +518,6 @@ export const PRESETS = [
         dataProviderLink: null,
         twelveGoLink: null,
       }, // #17
-      {
-        fromSlug: "budva",
-        fromCityId: "5f15a67c91f08f21a36e4441",
-        toSlug: "tirana",
-        toCityId: "5f20176b25b0951769af09df",
-        countrySlug: "montenegro",
-        dataProviderLink: null,
-        twelveGoLink: null,
-      }, // #18
       {
         fromSlug: "sarajevo",
         fromCityId: "5f968220562650e2fd75a2c3",
@@ -784,6 +806,38 @@ export const PRESETS = [
         dataProviderLink: null,
         twelveGoLink: null,
       }, // #50
+    ],
+  },
+  {
+    name: "Clickbus Mexico",
+    integration: "CLB",
+    routes: [
+      { fromSlug: "oaxaca", fromCityId: "5d7e2a7914afa3da1a34fd85", toSlug: "puerto-escondido", toCityId: "5f50be3672492dd00b9f53e1", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "puerto-escondido", fromCityId: "5f50be3672492dd00b9f53e1", toSlug: "oaxaca", toCityId: "5d7e2a7914afa3da1a34fd85", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "chiquila", fromCityId: "5f2173ea0074ba3c340bfd22", toSlug: "cancun", toCityId: "5bbf3d98d184be2dd45f011b", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "mexico-city", fromCityId: "5d7e2a0a14afa3570c34fd3b", toSlug: "oaxaca", toCityId: "5d7e2a7914afa3da1a34fd85", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "playa-del-carmen", fromCityId: "5b8f8a6078bfa27243335ccd", toSlug: "cancun", toCityId: "5bbf3d98d184be2dd45f011b", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "tulum", fromCityId: "5d3d4554d533f4fc3ed5ae97", toSlug: "playa-del-carmen", toCityId: "5b8f8a6078bfa27243335ccd", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "tulum", fromCityId: "5d3d4554d533f4fc3ed5ae97", toSlug: "cancun", toCityId: "5bbf3d98d184be2dd45f011b", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "cancun", fromCityId: "5bbf3d98d184be2dd45f011b", toSlug: "chiquila", toCityId: "5f2173ea0074ba3c340bfd22", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "cancun", fromCityId: "5bbf3d98d184be2dd45f011b", toSlug: "tulum", toCityId: "5d3d4554d533f4fc3ed5ae97", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "playa-del-carmen", fromCityId: "5b8f8a6078bfa27243335ccd", toSlug: "tulum", toCityId: "5d3d4554d533f4fc3ed5ae97", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+    ],
+  },
+  {
+    name: "Distribusion Mexico",
+    integration: "DSB",
+    routes: [
+      { fromSlug: "playa-del-carmen", fromCityId: "5b8f8a6078bfa27243335ccd", toSlug: "cancun", toCityId: "5bbf3d98d184be2dd45f011b", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "cancun", fromCityId: "5bbf3d98d184be2dd45f011b", toSlug: "playa-del-carmen", toCityId: "5b8f8a6078bfa27243335ccd", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "tulum", fromCityId: "5d3d4554d533f4fc3ed5ae97", toSlug: "cancun", toCityId: "5bbf3d98d184be2dd45f011b", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "cancun", fromCityId: "5bbf3d98d184be2dd45f011b", toSlug: "chiquila", toCityId: "5f2173ea0074ba3c340bfd22", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "cancun", fromCityId: "5bbf3d98d184be2dd45f011b", toSlug: "tulum", toCityId: "5d3d4554d533f4fc3ed5ae97", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "chiquila", fromCityId: "5f2173ea0074ba3c340bfd22", toSlug: "cancun", toCityId: "5bbf3d98d184be2dd45f011b", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "playa-del-carmen", fromCityId: "5b8f8a6078bfa27243335ccd", toSlug: "tulum", toCityId: "5d3d4554d533f4fc3ed5ae97", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "tulum", fromCityId: "5d3d4554d533f4fc3ed5ae97", toSlug: "playa-del-carmen", toCityId: "5b8f8a6078bfa27243335ccd", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "bacalar", fromCityId: "5d53e6ce85ba5918a07c903c", toSlug: "tulum", toCityId: "5d3d4554d533f4fc3ed5ae97", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
+      { fromSlug: "oaxaca", fromCityId: "5d7e2a7914afa3da1a34fd85", toSlug: "puerto-escondido", toCityId: "5f50be3672492dd00b9f53e1", countrySlug: "mexico", dataProviderLink: null, twelveGoLink: null },
     ],
   },
 ];
