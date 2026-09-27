@@ -11,6 +11,8 @@ export default function flattenPresetRoutes(presets) {
         integration: integration,
         fromSlug: route.fromSlug,
         toSlug: route.toSlug,
+        fromCityId: route.fromCityId,
+        toCityId: route.toCityId,
         countrySlug: route.countrySlug || 'colombia',
         dataProviderLink: route.dataProviderLink,
         twelveGoLink: route.twelveGoLink,

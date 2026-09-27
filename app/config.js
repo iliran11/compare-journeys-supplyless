@@ -1,5 +1,7 @@
 export const BASE_URL = "https://www.bookaway.com";
 
+export const ADMIN_URL = "https://admin.bookaway.com";
+
 export const ROUTES_STORAGE_KEY = "compare-search-supplyless:routes";
 
 export const SORT_BY_STORAGE_KEY = "compare-search-supplyless:sortBy";
@@ -17,6 +19,7 @@ export const NO_INTEGRATION_CODE = "none";
 // Settings shared by every integration type.
 export const COMMON_SEARCH_CONFIG = {
   tcCode: "TRV",
+  tcAdminSupplierName: "travelier",
   tcSupplierId: "64cb7cafdff7a93b3203f82b",
   passengersAmount: 2,
   searchRadiusInMeters: 1000,
@@ -33,6 +36,7 @@ export const COMMON_SEARCH_CONFIG = {
 //   integration has no flag. Until search-service #1687 is deployed, any code also trims results to its
 //   operator allow-list, and a code without an allow-list (CLB, DSB) empties the response.
 // - dataProviderDateParam: query param appended to dataProviderLink with the search date, or null.
+// - adminSupplierName: supplier-api supplier name used by the admin live search page (?supplier=).
 export const INTEGRATIONS = {
   PIN: {
     code: "PIN",
@@ -41,6 +45,7 @@ export const INTEGRATIONS = {
     filterBySourceOfData: "PIN",
     dataProviderName: "PinBus",
     dataProviderDateParam: "salida",
+    adminSupplierName: "pinbus",
   },
   GBB: {
     code: "GBB",
@@ -49,6 +54,7 @@ export const INTEGRATIONS = {
     filterBySourceOfData: null,
     dataProviderName: "GetByBus",
     dataProviderDateParam: null,
+    adminSupplierName: "getbybus",
   },
   CLB: {
     code: "CLB",
@@ -57,6 +63,7 @@ export const INTEGRATIONS = {
     filterBySourceOfData: null,
     dataProviderName: "Clickbus MX",
     dataProviderDateParam: null,
+    adminSupplierName: "clickbusmx",
   },
   DSB: {
     code: "DSB",
@@ -65,6 +72,7 @@ export const INTEGRATIONS = {
     filterBySourceOfData: null,
     dataProviderName: "Distribusion",
     dataProviderDateParam: null,
+    adminSupplierName: "distribusion",
   },
 };
 

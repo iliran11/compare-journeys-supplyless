@@ -11,6 +11,7 @@ export default function resolveSearchConfig(integrationCode) {
     bawSupplierId: integration.bawSupplierId,
     filterBySourceOfData: integration.filterBySourceOfData,
     dataProviderName: integration.dataProviderName,
-    dataProviderDateParam: integration.dataProviderDateParam
+    dataProviderDateParam: integration.dataProviderDateParam,
+    adminSupplierName: integration.adminSupplierName
   };
 }

@@ -6,7 +6,7 @@ export default function ViewRouteLinks({ route, date }) {
   const links = buildRouteSearchLinks(route, date);
   return (
     <div className="route-links">
-      <span className="route-links-label">Search pages</span>
+      <span className="route-links-label">Admin live search</span>
       {links.map((l) => (
         <a
           key={l.key}
