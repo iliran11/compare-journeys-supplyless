@@ -1219,3 +1219,66 @@ input[type="radio"],
 .card .card-integration .lbl {
   margin-right: 6px;
 }
+
+.card .rc-key {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 15px;
+}
+.card .rc-times .time {
+  font-size: 16px;
+}
+.card .rc-arrow {
+  margin: 0 5px;
+  color: var(--muted);
+}
+.card .rc-op {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card .rc-class {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  white-space: nowrap;
+}
+.card .rc-misc {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px dashed var(--line);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.card .rc-misc-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.card .rc-misc-row .rc-arrow {
+  margin: 0;
+}
+.card .rc-station {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card .rc-spacer {
+  flex: 1;
+}
+.card .rc-pics,
+.card .rc-price {
+  font-variant-numeric: tabular-nums;
+}

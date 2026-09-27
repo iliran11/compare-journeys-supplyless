@@ -18,38 +18,37 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) 
       onMouseLeave={onActivate ? () => onActivate(null) : undefined}
       onClick={onOpen ? () => onOpen(pairId) : undefined}
     >
-      <span className="price"><span className="lbl">price</span>{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
-      <span className="pic-count" title="Pictures">📷 {row.pictures ? row.pictures.length : 0}</span>
-      <span className="lbl">operator</span><span className="op">{row.company}</span>
-      {side === 'tc' && (
-        <div className="card-integration">
-          <span className="lbl">integration</span><span className="val">{row.integrationCode}</span>
+      <div className="rc-key">
+        <span className="rc-times">
+          <span className="time">{row.departure.slice(11)}</span>
+          <span className="rc-arrow">→</span>
+          <span className="time">{row.arrival.slice(11)}</span>
+        </span>
+        <span className="rc-op">{row.company}</span>
+        <span className="rc-class">{row.lineClass || '—'}</span>
+      </div>
+      <div className="rc-misc">
+        <div className="rc-misc-row">
+          <span className="rc-station" title={row.fromStation}>{row.fromStation || '—'}</span>
+          <span className="rc-arrow">→</span>
+          <span className="rc-station" title={row.toStation}>{row.toStation || '—'}</span>
         </div>
-      )}
-      {row.tripId && (
-        <div className="card-tripid">
-          <span className="lbl">transport id</span>
-          <a
-            className="triplink"
-            href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {row.tripId} ↗
-          </a>
-        </div>
-      )}
-      <div className="detail-sections">
-        <div className="detail-section">
-          <div className="section-title">Departure</div>
-          <div><span className="lbl">time</span><span className="time">{row.departure.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.fromStation || '—'}</span></div>
-        </div>
-        <div className="detail-section">
-          <div className="section-title">Arrival</div>
-          <div><span className="lbl">time</span><span className="time">{row.arrival.slice(11)}</span></div>
-          <div><span className="lbl">station</span><span className="val">{row.toStation || '—'}</span></div>
+        <div className="rc-misc-row">
+          {row.tripId && (
+            <a
+              className="triplink"
+              href={'https://admin.bookaway.com/transports/edit/' + row.tripId}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {row.tripId} ↗
+            </a>
+          )}
+          {side === 'tc' && <span className="rc-integration">{row.integrationCode}</span>}
+          <span className="rc-spacer" />
+          <span className="rc-pics" title="Pictures">📷 {row.pictures ? row.pictures.length : 0}</span>
+          <span className="rc-price">{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
         </div>
       </div>
     </div>
