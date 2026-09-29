@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import buildMatchedPairs from '../logic/buildMatchedPairs';
 import ViewJourneyCompareTabCompare from './ViewJourneyCompareTabCompare';
 import ViewJourneyCompareTabDiff from './ViewJourneyCompareTabDiff';
 import ViewJourneyCompareTabMisc from './ViewJourneyCompareTabMisc';
@@ -17,6 +18,7 @@ export default function ViewJourneyCompare({ result, detailGroup, onBack, bawRes
   const bawRows = result.matchedBaw.filter((r) => r.groupId === detailGroup);
   const tcRows = result.matchedTc.filter((r) => r.groupId === detailGroup);
   const groupRow = bawRows[0] || tcRows[0];
+  const pairs = buildMatchedPairs({ matchedBaw: bawRows, matchedTc: tcRows });
 
   return (
     <div className="page">
@@ -49,7 +51,7 @@ export default function ViewJourneyCompare({ result, detailGroup, onBack, bawRes
           date={date}
         />
       )}
-      {activeTab === 'diff' && <ViewJourneyCompareTabDiff bawRows={bawRows} tcRows={tcRows} />}
+      {activeTab === 'diff' && <ViewJourneyCompareTabDiff pairs={pairs} />}
       {activeTab === 'misc' && <ViewJourneyCompareTabMisc bawRows={bawRows} tcRows={tcRows} />}
     </div>
   );

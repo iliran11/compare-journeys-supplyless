@@ -11,7 +11,7 @@ const COLUMNS = [
   { key: 'status', label: 'Status' },
   { key: 'match', label: 'Journey match' },
   { key: 'duplicates', label: 'Duplicates' },
-  { key: 'avgPictures', label: 'Avg pictures/journey' },
+  { key: 'avgPictures', label: 'Avg pictures (BAW / TC)' },
   { key: 'classMatch', label: 'Class match' },
   { key: 'avgRankDiff', label: 'Avg rank diff' }
 ];
@@ -47,7 +47,7 @@ function RouteRow({ route, seq, onSearchRoute, onOpenRoute, searchingAll }) {
         {health ? health.matchedCount + '/' + health.bawTotal + ' · ' + health.matchPercent + '%' : '—'}
       </td>
       <td>{health ? health.duplicateCount + '/' + health.bawTotal + ' · ' + health.duplicatePercent + '%' : '—'}</td>
-      <td>{health && health.bawAvgPictures != null ? health.bawAvgPictures.toFixed(1) : '—'}</td>
+      <td>{health && health.bawAvgPictures != null && health.tcAvgPictures != null ? health.bawAvgPictures.toFixed(1) + ' / ' + health.tcAvgPictures.toFixed(1) : '—'}</td>
       <td>
         {health ? health.classMatchCount + '/' + health.classTotal + ' · ' + health.classMatchPercent + '%' : '—'}
       </td>

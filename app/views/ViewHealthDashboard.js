@@ -80,7 +80,7 @@ export default function ViewHealthDashboard({ routes }) {
       />
       <CompareGaugeTile
         label="Avg pictures"
-        formula={<ViewFormula top="tcAvgPictures" bottom="bawAvgPictures" suffix="× 100" />}
+        formula={<ViewFormula top="tcAvgPictures" bottom="bawAvgPictures" suffix="× 100" note="Calculated per matched BAW × TC pair." />}
         percent={m.pictureClosenessPercent}
         color={gaugeColorForCloseness(m.pictureClosenessPercent)}
         bawValue={m.bawAvgPictures == null ? '—' : m.bawAvgPictures.toFixed(1)}
@@ -88,7 +88,7 @@ export default function ViewHealthDashboard({ routes }) {
       />
       <CompareGaugeTile
         label="Avg price"
-        formula={<ViewFormula top="bawAvgPrice" bottom="tcAvgPrice" suffix="× 100" />}
+        formula={<ViewFormula top="bawAvgPrice" bottom="tcAvgPrice" suffix="× 100" note="Calculated per matched BAW × TC pair where both sides have a price." />}
         percent={m.priceClosenessPercent}
         color={gaugeColorForCloseness(m.priceClosenessPercent, { greenThreshold: 15 })}
         bawValue={formatPrice(m.bawAvgPrice)}

@@ -1,5 +1,7 @@
 import computeVehicleClassComparison from './computeVehicleClassComparison';
 import computeRankDiffComparison from './computeRankDiffComparison';
+import buildMatchedPairs from './buildMatchedPairs';
+import buildPricedMatchedPairs from './buildPricedMatchedPairs';
 import matchPercent from './kpi-calculators/matchPercent';
 import duplicatePercent from './kpi-calculators/duplicatePercent';
 import bawAvgPictures from './kpi-calculators/bawAvgPictures';
@@ -17,11 +19,13 @@ export default function computeHealthMetrics(result) {
 
   const duplicateCount = result.matchedBaw.filter((r) => r.tcMatchCount > 1).length;
 
-  const allBawRows = result.matchedBaw.concat(result.bawOnly);
-  const bawPictureCount = allBawRows.length;
-  const tcPictureCount = result.matchedTc.length;
-  const bawPriceCount = allBawRows.map((r) => r.price).filter((p) => p != null).length;
-  const tcPriceCount = result.matchedTc.map((r) => r.price).filter((p) => p != null).length;
+  // Picture and price averages cover matched BAW × TC pairs only, so both sides share one count.
+  const picturePairCount = buildMatchedPairs(result).length;
+  const pricePairCount = buildPricedMatchedPairs(result).length;
+  const bawPictureCount = picturePairCount;
+  const tcPictureCount = picturePairCount;
+  const bawPriceCount = pricePairCount;
+  const tcPriceCount = pricePairCount;
 
   const vclass = computeVehicleClassComparison(result);
   const rankDiff = computeRankDiffComparison(result);

@@ -1,5 +1,6 @@
+import buildMatchedPairs from '../buildMatchedPairs';
+
 export default function bawAvgPictures(result) {
-  const allBawRows = result.matchedBaw.concat(result.bawOnly);
-  const values = allBawRows.map((r) => (r.pictures ? r.pictures.length : 0));
+  const values = buildMatchedPairs(result).map((pair) => pair.baw.pictures.length);
   return values.length === 0 ? null : values.reduce((sum, v) => sum + v, 0) / values.length;
 }
