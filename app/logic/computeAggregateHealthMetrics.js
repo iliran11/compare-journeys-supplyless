@@ -41,9 +41,9 @@ export default function computeAggregateHealthMetrics(routes) {
   const classMatchCount = classTotal - classMismatchCount;
   const classMatchPercent = classTotal === 0 ? null : Math.round((classMatchCount / classTotal) * 100);
 
-  const rankDiffComparedCount = done.reduce((sum, r) => sum + (r.health.rankDiffComparedCount || 0), 0);
-  const rankDiffSum = done.reduce((sum, r) => sum + (r.health.rankDiffSum || 0), 0);
-  const avgRankDiff = rankDiffComparedCount === 0 ? null : rankDiffSum / rankDiffComparedCount;
+  const rankPairCount = done.reduce((sum, r) => sum + (r.health.rankPairCount || 0), 0);
+  const rankClosenessSum = done.reduce((sum, r) => sum + (r.health.rankClosenessSum || 0), 0);
+  const rankClosenessPercent = rankPairCount === 0 ? null : Math.round((rankClosenessSum / rankPairCount) * 100);
 
   return {
     total,
@@ -62,7 +62,7 @@ export default function computeAggregateHealthMetrics(routes) {
     classTotal,
     classMatchCount,
     classMatchPercent,
-    rankDiffComparedCount,
-    avgRankDiff
+    rankPairCount,
+    rankClosenessPercent
   };
 }

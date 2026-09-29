@@ -11,7 +11,7 @@ const COLUMNS = [
   { key: 'status', label: 'Status' },
   { key: 'match', label: 'Journey match' },
   { key: 'duplicates', label: 'Duplicates' },
-  { key: 'avgPictures', label: 'Avg pictures (BAW / TC)' },
+  { key: 'avgPictures', label: 'Avg pictures (TC / BAW)' },
   { key: 'classMatch', label: 'Class match' },
   { key: 'avgRankDiff', label: 'Avg rank diff' }
 ];
@@ -46,14 +46,10 @@ function RouteRow({ route, seq, onSearchRoute, onOpenRoute, searchingAll }) {
       <td>
         {health ? health.matchedCount + '/' + health.bawTotal + ' · ' + health.matchPercent + '%' : '—'}
       </td>
-      <td>{health ? health.duplicateCount + '/' + health.bawTotal + ' · ' + health.duplicatePercent + '%' : '—'}</td>
-      <td>{health && health.bawAvgPictures != null && health.tcAvgPictures != null ? health.bawAvgPictures.toFixed(1) + ' / ' + health.tcAvgPictures.toFixed(1) : '—'}</td>
-      <td>
-        {health ? health.classMatchCount + '/' + health.classTotal + ' · ' + health.classMatchPercent + '%' : '—'}
-      </td>
-      <td>
-        {health && health.avgRankDiff != null ? health.avgRankDiff.toFixed(1) + ' (' + health.rankDiffComparedCount + ')' : '—'}
-      </td>
+      <td>{health && health.bawTotal > 0 ? health.duplicatePercent + '%' : '—'}</td>
+      <td>{health && health.pictureClosenessPercent != null ? health.pictureClosenessPercent + '%' : '—'}</td>
+      <td>{health && health.classTotal > 0 ? health.classMatchPercent + '%' : '—'}</td>
+      <td>{health && health.rankClosenessPercent != null ? health.rankClosenessPercent + '%' : '—'}</td>
       <td onClick={(e) => e.stopPropagation()}>
         {route.status === 'loading' && <span className="route-inline-hint">…</span>}
         {(route.status === 'idle' || route.status === 'error') && (

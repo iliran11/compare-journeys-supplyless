@@ -9,13 +9,13 @@ function sortValue(route, key) {
     case 'match':
       return route.health ? route.health.matchPercent : null;
     case 'duplicates':
-      return route.health ? route.health.duplicateCount : null;
+      return route.health ? route.health.duplicatePercent : null;
     case 'avgPictures':
-      return route.health ? route.health.bawAvgPictures : null;
+      return route.health ? route.health.pictureClosenessPercent : null;
     case 'classMatch':
       return route.health ? route.health.classMatchPercent : null;
     case 'avgRankDiff':
-      return route.health ? route.health.avgRankDiff : null;
+      return route.health ? route.health.rankClosenessPercent : null;
     default:
       return null;
   }

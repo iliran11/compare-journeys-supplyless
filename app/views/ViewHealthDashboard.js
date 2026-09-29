@@ -16,16 +16,6 @@ function TileLabel({ label, formula }) {
   );
 }
 
-function Tile({ label, formula, value, sub }) {
-  return (
-    <div className="dash-tile">
-      <TileLabel label={label} formula={formula} />
-      <div className="dash-tile-value">{value}</div>
-      {sub && <div className="dash-tile-sub">{sub}</div>}
-    </div>
-  );
-}
-
 function GaugeTile({ label, formula, percent, sub, invert, color }) {
   return (
     <div className="dash-tile dash-tile-gauge">
@@ -100,11 +90,11 @@ export default function ViewHealthDashboard({ routes }) {
         percent={m.classMatchPercent}
         sub={m.classTotal ? m.classMatchCount + '/' + m.classTotal : null}
       />
-      <Tile
+      <GaugeTile
         label="Avg rank diff"
-        formula={<ViewFormula plain="For each matched BAW journey, its rank within BAW's matched set vs. its pair's rank within TC's matched set — averaged across all matched journeys. Lower is better." note="Calculated per matched BAW journeys." />}
-        value={m.avgRankDiff == null ? '—' : m.avgRankDiff.toFixed(1)}
-        sub={m.rankDiffComparedCount ? m.rankDiffComparedCount + ' journeys' : null}
+        formula={<ViewFormula plain="For each matched pair, the smaller of its BAW and TC ranks (within each side's matched set) over the larger — BAW #90 vs TC #100 and the reverse both give 90%. Averaged across pairs. Higher is better." note="Calculated per matched BAW × TC pair." />}
+        percent={m.rankClosenessPercent}
+        sub={m.rankPairCount ? m.rankPairCount + ' pairs' : null}
       />
     </div>
   );
