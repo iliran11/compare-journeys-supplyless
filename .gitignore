@@ -4,3 +4,4 @@ node_modules
 .env*
 scratch
 .DS_Store
+scripts/scoring-skill/*.raw.txt

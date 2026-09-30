@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import buildBawResultsUrl from '../logic/buildBawResultsUrl';
+import buildBotPrompt from '../logic/buildBotPrompt';
 import buildDebugValue from '../logic/buildDebugValue';
+import useCopyToClipboard from '../logic/useCopyToClipboard';
 import useSortByPreference from '../logic/useSortByPreference';
 import ViewRoot from './ViewRoot';
 import ViewRouteLinks from './ViewRouteLinks';
@@ -17,6 +19,8 @@ export default function ViewRouteDetail({ route, date, config, tcIntegrationFilt
   const [showConfig, setShowConfig] = useState(false);
   const [showCommon, setShowCommon] = useState(false);
   const [promptExpanded, setPromptExpanded] = useState(false);
+  const [promptFormat, setPromptFormat] = useState('compact');
+  const { copied, copy } = useCopyToClipboard(1500);
   const [sortBy, setSortBy] = useSortByPreference('departure');
   const [activePair, setActivePair] = useState(null);
   const [activeTab, setActiveTab] = useState('board');
@@ -30,9 +34,7 @@ export default function ViewRouteDetail({ route, date, config, tcIntegrationFilt
   const debugTc = buildDebugValue(route, 'tc');
   const debugBaw = buildDebugValue(route, 'baw');
 
-  const botPrompt =
-    '#RAW RESULTS FROM TC\n' + JSON.stringify(route.rawTc, null, 2) +
-    '\n\n#RAW RESULTS FROM BAW\n' + JSON.stringify(route.rawBaw, null, 2);
+  const botPrompt = buildBotPrompt(route, date, config, promptFormat);
 
   return (
     <div className="page">
@@ -130,6 +132,16 @@ export default function ViewRouteDetail({ route, date, config, tcIntegrationFilt
           <div className="config-section">
             <div className="prompt-head">
               <div className="config-title">Prompt for bot</div>
+              <button
+                className="secondary"
+                onClick={() => setPromptFormat(promptFormat === 'compact' ? 'raw' : 'compact')}
+                title="Toggle between the transport-level digest and the untouched responses"
+              >
+                {promptFormat === 'compact' ? 'Compact · show raw JSON' : 'Raw JSON · show compact'}
+              </button>
+              <button className="secondary" onClick={() => copy(botPrompt)}>
+                {copied ? 'Copied ✓' : 'Copy 📋'}
+              </button>
               <button className="secondary" onClick={() => setPromptExpanded(!promptExpanded)}>
                 {promptExpanded ? 'Collapse' : 'Expand'}
               </button>
