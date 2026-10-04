@@ -1,30 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { PRESETS } from '../config';
+import { useState } from 'react';
+import { DEFAULT_INTEGRATION, PRESETS } from '../config';
 import { prepareComparison } from '../prepare';
 import computeHealthMetrics from './computeHealthMetrics';
 import flattenPresetRoutes from './flattenPresetRoutes';
-import loadStoredRoutes from './loadStoredRoutes';
-import mergeStoredRoutes from './mergeStoredRoutes';
-import useIntegrationPreference from './useIntegrationPreference';
 import resolveSearchConfig from './resolveSearchConfig';
-import saveRoutesToStorage from './saveRoutesToStorage';
 
 export default function useRoutesStore() {
-  const [routes, setRoutes] = useState(() => mergeStoredRoutes(flattenPresetRoutes(PRESETS), loadStoredRoutes()));
+  const [routes, setRoutes] = useState(() => flattenPresetRoutes(PRESETS));
   const [date, setDate] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() + 2);
     return d.toISOString().slice(0, 10);
   });
-  const [integration, setIntegration] = useIntegrationPreference();
+  const [integration, setIntegration] = useState(DEFAULT_INTEGRATION);
   const [searchingAll, setSearchingAll] = useState(false);
   const [searchAllProgress, setSearchAllProgress] = useState({ done: 0, total: 0 });
-
-  useEffect(() => {
-    saveRoutesToStorage(routes);
-  }, [routes]);
 
   function updateRoute(id, patch) {
     setRoutes((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));

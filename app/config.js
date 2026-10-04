@@ -2,12 +2,6 @@ export const BASE_URL = "https://www.bookaway.com";
 
 export const ADMIN_URL = "https://admin.bookaway.com";
 
-export const ROUTES_STORAGE_KEY = "compare-search-supplyless:routes";
-
-export const SORT_BY_STORAGE_KEY = "compare-search-supplyless:sortBy";
-
-export const INTEGRATION_STORAGE_KEY = "compare-search-supplyless:integration";
-
 export const DEPARTURE_TIME_WINDOW_PADDING_MINUTES = 5;
 
 // Route-page URL param holding the selected TC integration codes (absent = all).
@@ -76,7 +70,7 @@ export const INTEGRATIONS = {
   },
 };
 
-export const DEFAULT_INTEGRATION = "PIN";
+export const DEFAULT_INTEGRATION = "CLB";
 
 // Each preset must declare `integration` (a key of INTEGRATIONS).
 // Each route entry should include dataProviderLink and twelveGoLink. Use null if no link is available.

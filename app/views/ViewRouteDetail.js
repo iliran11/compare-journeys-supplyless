@@ -5,7 +5,6 @@ import buildBawResultsUrl from '../logic/buildBawResultsUrl';
 import buildBotPrompt from '../logic/buildBotPrompt';
 import buildDebugValue from '../logic/buildDebugValue';
 import useCopyToClipboard from '../logic/useCopyToClipboard';
-import useSortByPreference from '../logic/useSortByPreference';
 import ViewRoot from './ViewRoot';
 import ViewRouteLinks from './ViewRouteLinks';
 import ViewTransportMatchTab from './ViewTransportMatchTab';
@@ -21,7 +20,7 @@ export default function ViewRouteDetail({ route, date, config, tcIntegrationFilt
   const [promptExpanded, setPromptExpanded] = useState(false);
   const [promptFormat, setPromptFormat] = useState('compact');
   const { copied, copy } = useCopyToClipboard(1500);
-  const [sortBy, setSortBy] = useSortByPreference('departure');
+  const [sortBy, setSortBy] = useState('departure');
   const [activePair, setActivePair] = useState(null);
   const [activeTab, setActiveTab] = useState('board');
 
