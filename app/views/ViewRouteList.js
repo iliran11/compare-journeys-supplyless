@@ -66,7 +66,7 @@ function RouteRow({ route, seq, onSearchRoute, onOpenRoute, searchingAll }) {
   );
 }
 
-export default function ViewRouteList({ routes, integration, setIntegration, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll, onOpenRoute }) {
+export default function ViewRouteList({ routes, integration, setIntegration, useCache, setUseCache, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll, onOpenRoute }) {
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
 
@@ -101,6 +101,10 @@ export default function ViewRouteList({ routes, integration, setIntegration, dat
               <option key={item.code} value={item.code}>{item.name} ({item.code})</option>
             ))}
           </select>
+        </div>
+        <div>
+          <label htmlFor="useCache">Use cache</label>
+          <input id="useCache" type="checkbox" checked={useCache} disabled={searchingAll} onChange={(e) => setUseCache(e.target.checked)} />
         </div>
         <button onClick={onSearchAll} disabled={searchingAll}>
           {searchingAll ? 'Searching all… ' + searchAllProgress.done + '/' + searchAllProgress.total : 'Search all'}

@@ -15,6 +15,7 @@ export default function useRoutesStore() {
     return d.toISOString().slice(0, 10);
   });
   const [integration, setIntegration] = useState(DEFAULT_INTEGRATION);
+  const [useCache, setUseCache] = useState(false);
   const [searchingAll, setSearchingAll] = useState(false);
   const [searchAllProgress, setSearchAllProgress] = useState({ done: 0, total: 0 });
 
@@ -41,7 +42,8 @@ export default function useRoutesStore() {
             mode: searchConfig.mode,
             skipEnrichment: searchConfig.skipEnrichment,
             filterBySourceOfData: searchConfig.filterBySourceOfData,
-            enableClickbusmx12goB2bOnTc: searchConfig.enableClickbusmx12goB2bOnTc
+            enableClickbusmx12goB2bOnTc: searchConfig.enableClickbusmx12goB2bOnTc,
+            disableCache: !useCache
           }
         })
       });
@@ -96,6 +98,8 @@ export default function useRoutesStore() {
     routes,
     integration,
     setIntegration,
+    useCache,
+    setUseCache,
     date,
     setDate,
     searchingAll,

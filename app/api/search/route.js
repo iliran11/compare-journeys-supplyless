@@ -10,7 +10,8 @@ const DEFAULT_CONFIG = {
   mode: 'origin',
   skipEnrichment: false,
   filterBySourceOfData: 'PIN',
-  enableClickbusmx12goB2bOnTc: true
+  enableClickbusmx12goB2bOnTc: true,
+  disableCache: true
 };
 
 export async function POST(request) {
@@ -41,7 +42,8 @@ export async function POST(request) {
         suppliers: [{ supplier: supplier }],
         skipEnrichment: config.skipEnrichment,
         mode: config.mode,
-        filterBySourceOfData: config.filterBySourceOfData
+        filterBySourceOfData: config.filterBySourceOfData,
+        disableCache: config.disableCache
       };
       if (side === 'tc' && config.enableClickbusmx12goB2bOnTc) {
         body.enable_clickbusmx_12gob2b = true;

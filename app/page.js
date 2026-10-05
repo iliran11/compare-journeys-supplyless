@@ -8,7 +8,7 @@ import ViewRouteList from './views/ViewRouteList';
 
 export default function Page() {
   const router = useRouter();
-  const { routes, integration, setIntegration, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll } = useRoutes();
+  const { routes, integration, setIntegration, useCache, setUseCache, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll } = useRoutes();
   const visibleRoutes = routes.filter((r) => r.integration === integration);
   const presetNames = [...new Set(visibleRoutes.map((r) => r.presetName))].join(', ');
 
@@ -27,6 +27,8 @@ export default function Page() {
         routes={visibleRoutes}
         integration={integration}
         setIntegration={setIntegration}
+        useCache={useCache}
+        setUseCache={setUseCache}
         date={date}
         setDate={setDate}
         searchingAll={searchingAll}
