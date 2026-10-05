@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { INTEGRATIONS } from '../config';
+import { INTEGRATIONS, SEARCH_HOST } from '../config';
 import gaugeColorForPercent from '../logic/gaugeColorForPercent';
 import sortRoutes from '../logic/sortRoutes';
 import ViewProgressBar from './ViewProgressBar';
@@ -119,6 +119,10 @@ export default function ViewRouteList({ routes, integration, setIntegration, use
 
       {showSettings && (
         <div className="config settings">
+          <div className="settings-host">
+            <span className="lbl">Search host</span>
+            <span>{SEARCH_HOST}</span>
+          </div>
           <label className="settings-check">
             <input type="checkbox" checked={useCache} disabled={searchingAll} onChange={(e) => setUseCache(e.target.checked)} />
             Use cache

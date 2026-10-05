@@ -2,6 +2,9 @@ export const BASE_URL = "https://www.bookaway.com";
 
 export const ADMIN_URL = "https://admin.bookaway.com";
 
+// Host the search API route sends search-results requests to (swap for a dev env like https://liran.bookaway.dev).
+export const SEARCH_HOST = "https://www.bookaway.com";
+
 export const DEPARTURE_TIME_WINDOW_PADDING_MINUTES = 5;
 
 // Route-page URL param holding the selected TC integration codes (absent = all).

@@ -1,7 +1,7 @@
+import { SEARCH_HOST } from '../../config';
 import fetchWithRetry from '../../logic/fetchWithRetry';
 
-const BOOKAWAY_HOST = 'https://www.bookaway.com';
-const SEARCH_URL = BOOKAWAY_HOST + '/_api/search/composite/v1/search-results';
+const SEARCH_URL = SEARCH_HOST + '/_api/search/composite/v1/search-results';
 
 const DEFAULT_CONFIG = {
   tcSupplier: { code: 'TRV', supplierId: '64cb7cafdff7a93b3203f82b' },
@@ -53,8 +53,8 @@ export async function POST(request) {
       const headers = {
           accept: 'application/json, text/plain, */*',
           'content-type': 'application/json',
-          origin: BOOKAWAY_HOST,
-          referer: BOOKAWAY_HOST + '/s/search',
+          origin: SEARCH_HOST,
+          referer: SEARCH_HOST + '/s/search',
           'x-distribution-channel': 'bookaway',
           'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36'
       };

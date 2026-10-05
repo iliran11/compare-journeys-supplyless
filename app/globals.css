@@ -1329,3 +1329,17 @@ input[type="radio"],
   gap: 6px;
   cursor: pointer;
 }
+.settings-host {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+.settings-host .lbl {
+  font-family: inherit;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
