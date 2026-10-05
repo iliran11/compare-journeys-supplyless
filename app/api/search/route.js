@@ -1,6 +1,6 @@
 import fetchWithRetry from '../../logic/fetchWithRetry';
 
-const BOOKAWAY_HOST = 'https://liran.bookaway.dev';
+const BOOKAWAY_HOST = 'https://www.bookaway.com';
 const SEARCH_URL = BOOKAWAY_HOST + '/_api/search/composite/v1/search-results';
 
 const DEFAULT_CONFIG = {
