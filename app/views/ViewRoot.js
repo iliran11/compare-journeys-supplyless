@@ -50,6 +50,19 @@ function Card({ row, side, unmatched, pairId, activePair, onActivate, onOpen }) 
           <span className="rc-pics" title="Pictures">📷 {row.pictures ? row.pictures.length : 0}</span>
           <span className="rc-price">{row.price != null ? '$' + row.price.toFixed(2) : '—'}</span>
         </div>
+        <div className="rc-remote">
+          <div className="rc-remote-title">Remote</div>
+          <div className="rc-misc-row">
+            <span className="lbl">from</span>
+            <span className="rc-station" title={row.remoteFrom.name}>{row.remoteFrom.name || '—'}</span>
+            <span className="rc-remote-id">{row.remoteFrom.id || '—'}</span>
+          </div>
+          <div className="rc-misc-row">
+            <span className="lbl">to</span>
+            <span className="rc-station" title={row.remoteTo.name}>{row.remoteTo.name || '—'}</span>
+            <span className="rc-remote-id">{row.remoteTo.id || '—'}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

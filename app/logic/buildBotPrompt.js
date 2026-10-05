@@ -8,7 +8,7 @@ export default function buildBotPrompt(route, date, config, format) {
   }
   return [
     '# ' + route.fromSlug + ' → ' + route.toSlug + ' · ' + date + ' · BAW integration: ' + config.integrationName + ' (' + config.integration + ')',
-    '# Times are local to each station. cutoff = minutes before departure. originalScore = ranking score (0 = no history).',
+    '# Times are local to each station. cutoff = minutes before departure. originalScore = ranking score (0 = no history). remote = supplier\'s own station name [id].',
     '',
     formatCompactSide('TC (' + config.tcCode + ')', route.rawTc),
     '',

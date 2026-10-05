@@ -66,9 +66,10 @@ function RouteRow({ route, seq, onSearchRoute, onOpenRoute, searchingAll }) {
   );
 }
 
-export default function ViewRouteList({ routes, integration, setIntegration, useCache, setUseCache, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll, onOpenRoute }) {
+export default function ViewRouteList({ routes, integration, setIntegration, useCache, setUseCache, date, setDate, searchingAll, searchAllProgress, onSearchRoute, onSearchAll, onOpenRoute, unmatchedBawCount, onDownloadUnmatchedBawCsv }) {
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
+  const [showSettings, setShowSettings] = useState(false);
 
   function handleSort(key) {
     if (sortKey === key) {
@@ -102,14 +103,36 @@ export default function ViewRouteList({ routes, integration, setIntegration, use
             ))}
           </select>
         </div>
-        <div>
-          <label htmlFor="useCache">Use cache</label>
-          <input id="useCache" type="checkbox" checked={useCache} disabled={searchingAll} onChange={(e) => setUseCache(e.target.checked)} />
-        </div>
         <button onClick={onSearchAll} disabled={searchingAll}>
           {searchingAll ? 'Searching all… ' + searchAllProgress.done + '/' + searchAllProgress.total : 'Search all'}
         </button>
+        <button
+          className="iconbtn"
+          onClick={() => setShowSettings(!showSettings)}
+          aria-expanded={showSettings}
+          aria-label="Settings"
+          title="Settings"
+        >
+          ⚙
+        </button>
       </div>
+
+      {showSettings && (
+        <div className="config settings">
+          <label className="settings-check">
+            <input type="checkbox" checked={useCache} disabled={searchingAll} onChange={(e) => setUseCache(e.target.checked)} />
+            Use cache
+          </label>
+          <button
+            className="secondary"
+            onClick={onDownloadUnmatchedBawCsv}
+            disabled={unmatchedBawCount === 0}
+            title="Transport ID, remote stations and route of every BAW journey with no TC match, across searched routes"
+          >
+            Download unmatched BAW CSV ({unmatchedBawCount})
+          </button>
+        </div>
+      )}
 
       {[...groups.entries()].map(([presetName, presetRoutes]) => {
         const doneCount = presetRoutes.filter((r) => r.status === 'done').length;

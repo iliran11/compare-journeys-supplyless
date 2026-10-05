@@ -1,4 +1,5 @@
 import kebabCase from 'lodash/kebabCase';
+import buildRemoteStation from './logic/buildRemoteStation';
 import journeyIntegrationCode from './logic/journeyIntegrationCode';
 
 function assignMatchedScoreRank(rows) {
@@ -36,6 +37,8 @@ export function prepareComparison(tcRaw, bawRaw) {
             vehicleType: leg.lineType || leg.type || '',
             fromStation: leg.from ? leg.from.name : '',
             toStation: leg.to ? leg.to.name : '',
+            remoteFrom: buildRemoteStation(leg.from),
+            remoteTo: buildRemoteStation(leg.to),
             departure: departure,
             arrival: arrival,
             price: journey.price ? journey.price.amount : null,

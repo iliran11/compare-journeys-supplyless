@@ -1,6 +1,7 @@
 import round from 'lodash/round';
 import sumBy from 'lodash/sumBy';
 import formatCompactJourney from './formatCompactJourney';
+import formatCompactRemoteStation from './formatCompactRemoteStation';
 
 // Transport-level digest of one search-results response, in response (rank) order.
 export default function formatCompactSide(title, raw) {
@@ -22,8 +23,8 @@ export default function formatCompactSide(title, raw) {
     for (const leg of trip.legs || []) {
       const amenities = (leg.amenities || []).map((a) => a.englishLabel || a.label);
       lines.push('  ' + leg.companyName + ' [' + (leg.supplier && leg.supplier.id) + '] | ' + leg.lineType + ' · ' + leg.lineClass);
-      lines.push('  from: ' + leg.from.name + ' [' + leg.from.id + ']');
-      lines.push('  to:   ' + leg.to.name + ' [' + leg.to.id + ']');
+      lines.push('  from: ' + leg.from.name + ' [' + leg.from.id + ']' + formatCompactRemoteStation(leg.from));
+      lines.push('  to:   ' + leg.to.name + ' [' + leg.to.id + ']' + formatCompactRemoteStation(leg.to));
       lines.push(
         '  pictures ' + (leg.pictures || []).length +
         ' · amenities ' + (amenities.length ? amenities.join(', ') : '—') +
