@@ -1317,6 +1317,31 @@ input[type="radio"],
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+.card .rc-stops {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+.card .rc-stop {
+  padding: 0 4px;
+  border-radius: 3px;
+}
+.card .rc-stop .time {
+  font-weight: 400;
+  width: 38px;
+  flex: none;
+}
+.card .rc-stop.rc-range .time {
+  width: 92px;
+}
+.card .rc-key.multistation {
+  grid-template-columns: 1fr auto;
+}
+.card .rc-stop.matched {
+  color: var(--match);
+  background: color-mix(in srgb, var(--match) 12%, transparent);
+}
 .config.settings {
   display: flex;
   align-items: center;

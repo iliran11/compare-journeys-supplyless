@@ -1,4 +1,4 @@
-// One pair per BAW × TC journey inside a match group: a BAW journey matching two TC journeys yields two pairs.
+// One pair per BAW × TC journey inside a match group (identical stop sets): a BAW journey matching two TC journeys yields two pairs.
 export default function buildMatchedPairs(result) {
   const tcByGroup = new Map();
   for (const row of result.matchedTc) {

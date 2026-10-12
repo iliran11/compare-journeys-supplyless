@@ -12,7 +12,7 @@ export default function ViewTcIntegrationFilter({ filter }) {
             checked={filter.selectedCodes.includes(option.code)}
             onChange={() => filter.toggleCode(option.code)}
           />
-          {' '}{option.code} <span className="muted">({option.count})</span>
+          {' '}{option.code} <span className="muted" title="Matched / total journeys">({option.matchedCount}/{option.count})</span>
         </label>
       ))}
     </div>

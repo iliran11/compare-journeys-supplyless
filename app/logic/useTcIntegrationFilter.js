@@ -15,8 +15,10 @@ export default function useTcIntegrationFilter(route) {
   const param = searchParams.get(TC_INTEGRATIONS_QUERY_PARAM);
   const rawTc = route && route.rawTc;
   const rawBaw = route && route.rawBaw;
+  // The BAW side is never filtered, so a TC journey's match status is the same in the filtered and unfiltered results.
+  const matchedTc = route && route.result && route.result.matchedTc;
 
-  const options = useMemo(() => collectIntegrationCodes(rawTc), [rawTc]);
+  const options = useMemo(() => collectIntegrationCodes(rawTc, matchedTc), [rawTc, matchedTc]);
   const allCodes = options.map((o) => o.code);
   const isFiltered = param !== null;
   const selectedCodes = isFiltered ? param.split(',').filter(Boolean) : allCodes;

@@ -1,6 +1,12 @@
 import kebabCase from 'lodash/kebabCase';
+import buildBoardSections from './logic/buildBoardSections';
+import buildJourneyStops from './logic/buildJourneyStops';
+import buildMatchGroupIds from './logic/buildMatchGroupIds';
 import buildRemoteStation from './logic/buildRemoteStation';
+import buildStopMatchKeys from './logic/buildStopMatchKeys';
+import buildStopSetKey from './logic/buildStopSetKey';
 import journeyIntegrationCode from './logic/journeyIntegrationCode';
+import markMatchedStops from './logic/markMatchedStops';
 
 function assignMatchedScoreRank(rows) {
   const byScore = rows.slice().sort(function (a, b) {
@@ -29,6 +35,8 @@ export function prepareComparison(tcRaw, bawRaw) {
           const departure = new Date(journey.departure.date).toLocaleString('sv-SE', { timeZone: journey.departure.timezone }).slice(0, 16);
           const arrival = new Date(journey.arrival.date).toLocaleString('sv-SE', { timeZone: journey.arrival.timezone }).slice(0, 16);
           const companyKey = kebabCase(leg.companyName || '');
+          const stops = buildJourneyStops(leg, journey);
+          const matchKeys = buildStopMatchKeys(companyKey, stops);
           rowsBySide[side.label].push({
             tripId: trip._id,
             company: leg.companyName || '',
@@ -45,7 +53,9 @@ export function prepareComparison(tcRaw, bawRaw) {
             integrationCode: journeyIntegrationCode(journey),
             score: typeof trip.originalScore === 'number' ? trip.originalScore : (typeof trip.score === 'number' ? trip.score : 0),
             pictures: (leg.pictures || []).map(function (p) { return p && p.url ? 'https://cdn.bookaway.com/media/files/' + p.url : ''; }).filter(Boolean),
-            matchKey: companyKey + '|' + departure + '|' + arrival,
+            stops: stops,
+            matchKeys: matchKeys,
+            stopSetKey: buildStopSetKey(matchKeys),
             raw: { trip: trip, leg: leg, journey: journey }
           });
         }
@@ -65,42 +75,30 @@ export function prepareComparison(tcRaw, bawRaw) {
   const tcRows = rowsBySide.tc;
   const bawRows = rowsBySide.baw;
 
-  const bawKeys = new Set();
-  for (const row of bawRows) {
-    bawKeys.add(row.matchKey);
-  }
-  const tcKeys = new Set();
-  for (const row of tcRows) {
-    tcKeys.add(row.matchKey);
-  }
+  const bawStopSets = new Set(bawRows.map((row) => row.stopSetKey));
+  const tcStopSets = new Set(tcRows.map((row) => row.stopSetKey));
+  const matchedTcRows = tcRows.filter((row) => bawStopSets.has(row.stopSetKey));
+  const matchedBawRows = bawRows.filter((row) => tcStopSets.has(row.stopSetKey));
+  const groupIdByStopSet = buildMatchGroupIds(matchedTcRows.concat(matchedBawRows));
 
-  const groupIdByKey = new Map();
   const matchedTc = [];
   const tcOnly = [];
   for (const row of tcRows) {
-    if (bawKeys.has(row.matchKey)) {
-      if (!groupIdByKey.has(row.matchKey)) {
-        groupIdByKey.set(row.matchKey, groupIdByKey.size);
-      }
-      matchedTc.push({ ...row, groupId: groupIdByKey.get(row.matchKey) });
+    if (matchedTcRows.includes(row)) {
+      matchedTc.push({ ...row, stops: markMatchedStops(row, true), groupId: groupIdByStopSet.get(row.stopSetKey) });
     } else {
-      tcOnly.push(row);
+      tcOnly.push({ ...row, stops: markMatchedStops(row, false) });
     }
-  }
-
-  const tcCountByGroup = new Map();
-  for (const row of matchedTc) {
-    tcCountByGroup.set(row.groupId, (tcCountByGroup.get(row.groupId) || 0) + 1);
   }
 
   const matchedBaw = [];
   const bawOnly = [];
   for (const row of bawRows) {
-    if (tcKeys.has(row.matchKey)) {
-      const groupId = groupIdByKey.get(row.matchKey);
-      matchedBaw.push({ ...row, groupId: groupId, tcMatchCount: tcCountByGroup.get(groupId) || 0 });
+    if (matchedBawRows.includes(row)) {
+      const tcMatchCount = matchedTc.filter((tcRow) => tcRow.stopSetKey === row.stopSetKey).length;
+      matchedBaw.push({ ...row, stops: markMatchedStops(row, true), groupId: groupIdByStopSet.get(row.stopSetKey), tcMatchCount: tcMatchCount });
     } else {
-      bawOnly.push(row);
+      bawOnly.push({ ...row, stops: markMatchedStops(row, false) });
     }
   }
 
@@ -112,9 +110,10 @@ export function prepareComparison(tcRaw, bawRaw) {
     matchedBaw: matchedBaw,
     tcOnly: tcOnly,
     bawOnly: bawOnly,
+    sections: buildBoardSections({ matchedBaw: matchedBaw, matchedTc: matchedTc, bawOnly: bawOnly, tcOnly: tcOnly }),
     tcCount: tcRows.length,
     bawCount: bawRows.length,
-    matchedGroups: groupIdByKey.size,
+    matchedGroups: groupIdByStopSet.size,
     tcIsPartial: Boolean((tcRaw || {}).isPartial)
   };
 }
